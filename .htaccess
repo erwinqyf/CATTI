@@ -1,0 +1,48 @@
+# CATTI 二级笔译 - Apache 配置
+
+# 启用重写引擎
+RewriteEngine On
+
+# 强制 HTTPS（生产环境）
+# RewriteCond %{HTTPS} !=on
+# RewriteRule ^ https://%{HTTP_HOST}%{REQUEST_URI} [L,R=301]
+
+# 禁止目录浏览
+Options -Indexes
+
+# 隐藏敏感文件
+<FilesMatch "\.(env|log|git|idea|vscode)$">
+    Require all denied
+</FilesMatch>
+
+# PHP 超时设置（防止 AI 请求超时）
+<IfModule mod_php7.c>
+    php_value max_execution_time 60
+    php_value memory_limit 256M
+</IfModule>
+
+<IfModule mod_php8.c>
+    php_value max_execution_time 60
+    php_value memory_limit 256M
+</IfModule>
+
+# 错误文档
+ErrorDocument 404 /index.html
+ErrorDocument 500 /index.html
+
+# MIME 类型设置
+<IfModule mod_mime.c>
+    AddType application/javascript js
+    AddType text/css css
+    AddType text/html html
+    AddType application/json json
+</IfModule>
+
+# 缓存设置（开发环境可以禁用）
+<IfModule mod_expires.c>
+    ExpiresActive On
+    ExpiresByType text/css "access plus 1 week"
+    ExpiresByType application/javascript "access plus 1 week"
+    ExpiresByType image/png "access plus 1 week"
+    ExpiresByType image/svg+xml "access plus 1 week"
+</IfModule>

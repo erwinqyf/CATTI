@@ -1,0 +1,705 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>CATTI 二级笔译 - AI 辅导</title>
+    <link rel="stylesheet" href="styles.css">
+</head>
+<body>
+    <div class="container">
+        <!-- 头部 -->
+        <header class="header">
+            <div class="header-left">
+                <h1 class="logo">CATTI 二级笔译</h1>
+                <button class="config-btn" onclick="showConfigModal()">
+                    <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+                        <circle cx="12" cy="12" r="3"></circle>
+                        <path d="M19.4 15a1.65 1.65 0 0 0 .33 1.82l.06.06a2 2 0 0 1 0 2.83 2 2 0 0 1-2.83 0l-.06-.06a1.65 1.65 0 0 0-1.82-.33 1.65 1.65 0 0 0-1 1.51V21a2 2 0 0 1-2 2 2 2 0 0 1-2-2v-.09A1.65 1.65 0 0 0 9 19.4a1.65 1.65 0 0 0-1.82.33l-.06.06a2 2 0 0 1-2.83 0 2 2 0 0 1 0-2.83l.06-.06a1.65 1.65 0 0 0 .33-1.82 1.65 1.65 0 0 0-1.51-1H3a2 2 0 0 1-2-2 2 2 0 0 1 2-2h.09A1.65 1.65 0 0 0 4.6 9a1.65 1.65 0 0 0-.33-1.82l-.06-.06a2 2 0 0 1 0-2.83 2 2 0 0 1 2.83 0l.06.06a1.65 1.65 0 0 0 1.82.33H9a1.65 1.65 0 0 0 1-1.51V3a2 2 0 0 1 2-2 2 2 0 0 1 2 2v.09a1.65 1.65 0 0 0 1 1.51 1.65 1.65 0 0 0 1.82-.33l.06-.06a2 2 0 0 1 2.83 0 2 2 0 0 1 0 2.83l-.06.06a1.65 1.65 0 0 0-.33 1.82V9a1.65 1.65 0 0 0 1.51 1H21a2 2 0 0 1 2 2 2 2 0 0 1-2 2h-.09a1.65 1.65 0 0 0-1.51 1z"></path>
+                    </svg>
+                </button>
+            </div>
+            <nav class="nav">
+                <button class="nav-btn active" onclick="showTab('home')">首页</button>
+                <button class="nav-btn" onclick="showTab('practice')">练习模式</button>
+                <button class="nav-btn" onclick="showTab('grading')">批改中心</button>
+            </nav>
+        </header>
+
+        <!-- 首页 -->
+        <section id="home" class="section active">
+            <div class="hero">
+                <h2 class="hero-title">CATTI 二级笔译 AI 辅导</h2>
+                <p class="hero-subtitle">AI 出题 + 实战练习 + 智能批改</p>
+                <div class="hero-buttons">
+                    <button class="btn btn-primary" onclick="goToPractice()">开始练习</button>
+                </div>
+            </div>
+
+            <div class="stats-grid">
+                <div class="stat-card">
+                    <div class="stat-number" id="total-practices">0</div>
+                    <div class="stat-label">练习题数</div>
+                </div>
+                <div class="stat-card">
+                    <div class="stat-number" id="avg-score">0</div>
+                    <div class="stat-label">平均得分</div>
+                </div>
+                <div class="stat-card">
+                    <div class="stat-number" id="study-time">0h</div>
+                    <div class="stat-label">学习时间</div>
+                </div>
+            </div>
+
+            <div class="topics-section">
+                <h3 class="section-title">出题主题</h3>
+                <div class="topics-grid">
+                    <div class="topic-card" onclick="selectTopicForPractice('经济类')">
+                        <div class="topic-icon">📊</div>
+                        <div class="topic-title">经济类</div>
+                        <div class="topic-desc">AI 生成经济相关译文</div>
+                    </div>
+                    <div class="topic-card" onclick="selectTopicForPractice('社会类')">
+                        <div class="topic-icon">🏢</div>
+                        <div class="topic-title">社会类</div>
+                        <div class="topic-desc">AI 生成社会相关译文</div>
+                    </div>
+                    <div class="topic-card" onclick="selectTopicForPractice('科技类')">
+                        <div class="topic-icon">🚀</div>
+                        <div class="topic-title">科技类</div>
+                        <div class="topic-desc">AI 生成科技相关译文</div>
+                    </div>
+                    <div class="topic-card" onclick="selectTopicForPractice('文化类')">
+                        <div class="topic-icon">🏛️</div>
+                        <div class="topic-title">文化类</div>
+                        <div class="topic-desc">AI 生成文化相关译文</div>
+                    </div>
+                </div>
+            </div>
+        </section>
+
+        <!-- 练习模式 -->
+        <section id="practice" class="section">
+            <div class="practice-header">
+                <button class="back-btn" onclick="showTab('home')">
+                    <svg width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+                        <path d="M19 12H5M12 19l-7-7 7-7"/>
+                    </svg>
+                </button>
+                <div class="progress-container">
+                    <div class="progress-bar">
+                        <div class="progress-fill" id="practice-progress"></div>
+                    </div>
+                    <div class="progress-text" id="practice-text">1/1</div>
+                </div>
+                <div class="topic-name" id="practice-topic">经济类</div>
+            </div>
+
+            <!-- AI 生成中提示 -->
+            <div id="generating-indicator" class="generating-indicator" style="display:none;">
+                <div class="spinner"></div>
+                <span>AI 正在为您生成题目...</span>
+            </div>
+
+            <div class="translation-container">
+                <!-- 左侧：原文 -->
+                <div class="source-panel">
+                    <div class="panel-header">
+                        <span class="panel-title">原文</span>
+                        <span class="panel-lang" id="source-lang">中文</span>
+                    </div>
+                    <div class="source-content" id="source-text">
+                        <div class="placeholder-text">点击下方"生成题目"按钮，AI 将为您生成题目</div>
+                    </div>
+                </div>
+
+                <!-- 右侧：译文输入 -->
+                <div class="target-panel">
+                    <div class="panel-header">
+                        <span class="panel-title">译文</span>
+                        <div class="action-buttons">
+                            <button class="action-btn" onclick="clearTranslation()" title="清空译文">
+                                <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+                                    <path d="M3 6H5H21M19 6V20C19 21 18 22 17 22H7C6 22 5 21 5 20V6M8 6V4C8 3 9 2 10 2H14C15 2 16 3 16 4V6M10 10L14 14M14 10L10 14"/>
+                                </svg>
+                            </button>
+                            <button class="action-btn" onclick="copySource()" title="复制原文">
+                                <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+                                    <rect x="9" y="9" width="13" height="13" rx="2" ry="2"></rect>
+                                    <path d="M5 15H4C3 15 3 14 3 13V4C3 3 4 2 5 2H16C17 2 18 3 18 4V5"></path>
+                                </svg>
+                            </button>
+                        </div>
+                    </div>
+                    <textarea class="target-input" id="target-text" placeholder="在此输入译文..."></textarea>
+                    <div class="target-footer">
+                        <span class="word-count" id="word-count">0 字</span>
+                        <div class="timer" id="timer">00:00</div>
+                    </div>
+                </div>
+            </div>
+
+            <div class="practice-actions">
+                <button class="btn btn-primary" onclick="generateQuestionFromTopic()">生成题目</button>
+                <button class="btn btn-primary" id="submit-btn" style="display:none" onclick="submitForGrading()">提交批改</button>
+                <button class="btn btn-outline" onclick="generateNextQuestion()">换一题</button>
+            </div>
+
+            <!-- AI 批改结果 -->
+            <div class="grading-result" id="grading-result">
+                <div class="panel-header">
+                    <span class="panel-title">AI 批改结果</span>
+                    <span class="grade-score" id="grade-score">--</span>
+                </div>
+                <div class="grading-content" id="grading-content">
+                    <div class="placeholder-text">提交译文后，AI 将为您批改并给出评分与建议</div>
+                </div>
+            </div>
+        </section>
+
+        <!-- 批改中心 -->
+        <section id="grading" class="section">
+            <div class="grading-header">
+                <button class="back-btn" onclick="showTab('home')">
+                    <svg width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+                        <path d="M19 12H5M12 19l-7-7 7-7"/>
+                    </svg>
+                </button>
+                <h2 class="grading-title">批改历史</h2>
+            </div>
+            <div class="grading-history" id="grading-history">
+                <div class="empty-history">暂无批改记录</div>
+            </div>
+            <div class="grading-actions">
+                <button class="btn btn-outline" onclick="clearHistory()">清空历史</button>
+            </div>
+        </section>
+
+        <!-- 阿里云 API 配置模态框 -->
+        <div id="config-modal" class="modal">
+            <div class="modal-content">
+                <div class="modal-header">
+                    <h3>API 配置</h3>
+                    <button class="close-btn" onclick="closeConfigModal()">&times;</button>
+                </div>
+                <div class="modal-body">
+                    <div class="form-group">
+                        <label for="provider-select">服务商:</label>
+                        <select id="provider-select" class="select-input" onchange="updateProviderConfig()">
+                            <option value="aliyun">阿里云 DashScope</option>
+                            <option value="deepseek">DeepSeek</option>
+                            <option value="zhipu">智谱 AI</option>
+                            <option value="kimi">月之暗面 (Kimi)</option>
+                            <option value="minimax">MiniMax</option>
+                        </select>
+                    </div>
+                    <div class="form-group">
+                        <label for="api-key-modal">API Key:</label>
+                        <div style="display: flex; gap: 8px;">
+                            <input type="password" id="api-key-modal" placeholder="sk-..." value="" style="flex: 1;">
+                            <button type="button" class="action-btn" onclick="toggleApiKeyVisibility()" title="显示/隐藏 API Key">
+                                <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+                                    <path d="M1 12s4-8 11-8 11 8 11 8-4 8-11 8-11-8-11-8z"></path>
+                                    <circle cx="12" cy="12" r="3"></circle>
+                                </svg>
+                            </button>
+                        </div>
+                    </div>
+                    <div class="form-group">
+                        <label for="model-name-modal">模型:</label>
+                        <select id="model-name-modal" class="select-input"></select>
+                    </div>
+                    <p class="modal-desc">配置后可使用 AI 出题和批改功能。API Key 仅本地存储，不会上传。</p>
+                    <button class="btn btn-primary" onclick="saveConfig()">保存配置</button>
+                </div>
+            </div>
+        </div>
+
+        <!-- Dify 工作流配置弹窗 -->
+        <div id="dify-config-modal" class="modal">
+            <div class="modal-content">
+                <div class="modal-header">
+                    <h3>Dify 工作流配置</h3>
+                    <button class="close-btn" onclick="closeDifyConfig()">&times;</button>
+                </div>
+                <div class="modal-body">
+                    <p class="modal-desc">请输入您的 Dify 工作流 API 信息（用于翻译润色咨询）</p>
+                    <div class="form-group">
+                        <label for="dify-api-key">API Key:</label>
+                        <input type="password" id="dify-api-key" placeholder="输入您的 Dify API Key">
+                    </div>
+                    <div class="form-group">
+                        <label for="dify-workflow-id">Workflow ID:</label>
+                        <input type="text" id="dify-workflow-id" placeholder="输入您的 Dify Workflow ID">
+                    </div>
+                    <div class="form-group">
+                        <label for="dify-base-url">Base URL:</label>
+                        <input type="text" id="dify-base-url" placeholder="https://api.dify.ai/v1" value="https://api.dify.ai/v1">
+                    </div>
+                    <div class="modal-footer">
+                        <button class="btn btn-secondary" onclick="closeDifyConfig()">取消</button>
+                        <button class="btn btn-primary" onclick="saveDifyConfig()">保存配置</button>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <script>
+/**
+ * CATTI 二级笔译 - 前端应用（纯前端版）
+ */
+
+// 全局状态
+let currentQuestion = null;
+let practiceTimer = null;
+let practiceElapsedTime = 0;
+let pendingTopic = null; // 存储待生成的题目主题
+
+// 多服务商配置
+const API_PROVIDERS = {
+    aliyun: {
+        name: '阿里云 DashScope',
+        url: 'https://dashscope.aliyuncs.com/compatible-mode/v1/chat/completions',
+        placeholder: 'sk-...',
+        models: [
+            { value: 'qwen-max', label: 'qwen-max' },
+            { value: 'qwen-plus', label: 'qwen-plus' },
+            { value: 'qwen-turbo', label: 'qwen-turbo' },
+            { value: 'qwen3-coder-next', label: 'qwen3-coder-next' }
+        ]
+    },
+    deepseek: {
+        name: 'DeepSeek',
+        url: 'https://api.deepseek.com/v1/chat/completions',
+        placeholder: 'sk-...',
+        models: [
+            { value: 'deepseek-chat', label: 'deepseek-chat' },
+            { value: 'deepseek-reasoner', label: 'deepseek-reasoner' }
+        ]
+    },
+    zhipu: {
+        name: '智谱 AI',
+        url: 'https://open.bigmodel.cn/api/paas/v4/chat/completions',
+        placeholder: 'sk-...',
+        models: [
+            { value: 'glm-4-0520', label: 'glm-4-0520' },
+            { value: 'glm-4-flash', label: 'glm-4-flash' },
+            { value: 'glm-4-air', label: 'glm-4-air' }
+        ]
+    },
+    kimi: {
+        name: '月之暗面 (Kimi)',
+        url: 'https://api.moonshot.cn/v1/chat/completions',
+        placeholder: 'sk-...',
+        models: [
+            { value: 'moonshot-v1-8k', label: 'moonshot-v1-8k' },
+            { value: 'moonshot-v1-32k', label: 'moonshot-v1-32k' },
+            { value: 'moonshot-v1-128k', label: 'moonshot-v1-128k' }
+        ]
+    },
+    minimax: {
+        name: 'MiniMax',
+        url: 'https://api.minimaxi.com/v1/chat/completions',
+        placeholder: 'xxxxx',
+        models: [
+            { value: 'MiniMax-M2.5-7B', label: 'MiniMax-M2.5-7B' },
+            { value: 'MiniMax-M2.5-52B', label: 'MiniMax-M2.5-52B' }
+        ]
+    }
+};
+
+// ==================== 服务商相关函数 ====================
+
+function getProvider() {
+    return document.getElementById('provider-select')?.value || 'aliyun';
+}
+
+function getProviderConfig() {
+    return API_PROVIDERS[getProvider()] || API_PROVIDERS.aliyun;
+}
+
+function updateProviderConfig() {
+    const provider = getProvider();
+    const placeholder = API_PROVIDERS[provider]?.placeholder || 'sk-...';
+    const models = API_PROVIDERS[provider]?.models || [];
+
+    document.getElementById('api-key-modal').placeholder = placeholder;
+
+    // 更新模型下拉框
+    const modelSelect = document.getElementById('model-name-modal');
+    modelSelect.innerHTML = '';
+
+    // 添加分组
+    const providerName = API_PROVIDERS[provider]?.name || provider;
+    const group = document.createElement('optgroup');
+    group.label = providerName;
+
+    models.forEach(model => {
+        const option = document.createElement('option');
+        option.value = model.value;
+        option.textContent = model.label;
+        if (provider === 'aliyun' && model.value === 'qwen3-coder-next') {
+            option.selected = true;
+        }
+        group.appendChild(option);
+    });
+
+    modelSelect.appendChild(group);
+}
+
+// ==================== 配置相关函数 ====================
+
+// 测试 API 连接
+async function testAPIConnection(apiKey, apiUrl, modelName) {
+    try {
+        const response = await fetch(apiUrl, {
+            method: 'POST',
+            headers: {
+                'Authorization': `Bearer ${apiKey}`,
+                'Content-Type': 'application/json'
+            },
+            body: JSON.stringify({
+                model: modelName,
+                messages: [{ role: 'user', content: 'test' }],
+                temperature: 0.7,
+                max_tokens: 10
+            })
+        });
+
+        if (!response.ok) {
+            const data = await response.json();
+            return { success: false, message: data.error?.message || 'API 请求失败' };
+        }
+
+        return { success: true, message: '配置成功' };
+    } catch (error) {
+        return { success: false, message: error.message || '网络错误' };
+    }
+}
+
+function loadConfig() {
+    const provider = localStorage.getItem('apiProvider') || 'aliyun';
+    const apiKey = localStorage.getItem('apiKey') || '';
+    const modelName = localStorage.getItem('modelName') || 'qwen3-coder-next';
+
+    // 更新服务商下拉框
+    const providerSelect = document.getElementById('provider-select');
+    if (providerSelect) providerSelect.value = provider;
+
+    updateProviderConfig();
+
+    // 只填充模态框里的输入框
+    const modalApiKey = document.getElementById('api-key-modal');
+    const modalModelName = document.getElementById('model-name-modal');
+    if (modalApiKey) modalApiKey.value = apiKey;
+    if (modalModelName) modalModelName.value = modelName;
+}
+
+// 切换 API Key 显示/隐藏
+function toggleApiKeyVisibility() {
+    const input = document.getElementById('api-key-modal');
+    input.type = input.type === 'password' ? 'text' : 'password';
+}
+
+function saveConfig() {
+    const provider = getProvider();
+    const apiKey = document.getElementById('api-key-modal').value.trim();
+    const modelName = document.getElementById('model-name-modal').value;
+
+    if (!apiKey) {
+        showStatus('请配置 API Key', 'error');
+        return;
+    }
+
+    localStorage.setItem('apiProvider', provider);
+    localStorage.setItem('apiKey', apiKey);
+    localStorage.setItem('modelName', modelName);
+
+    // 获取 API URL 并测试连接
+    const providerConfig = API_PROVIDERS[provider] || API_PROVIDERS.aliyun;
+    const apiUrl = providerConfig.url;
+
+    // 显示保存中状态
+    const statusEl = document.getElementById('config-status');
+    const originalText = statusEl?.textContent || '';
+    if (statusEl) {
+        statusEl.textContent = '正在测试 API 连接...';
+        statusEl.style.color = '#666';
+    }
+
+    // 测试 API 连接
+    testAPIConnection(apiKey, apiUrl, modelName).then(result => {
+        if (statusEl) {
+            if (result.success) {
+                statusEl.textContent = '配置成功';
+                statusEl.style.color = '#4CAF50';
+            } else {
+                statusEl.textContent = '配置失败: ' + result.message;
+                statusEl.style.color = '#ff4444';
+                // 如果测试失败，不关闭模态框，让用户可以修改
+                setTimeout(() => { hideStatus(); }, 5000);
+                return;
+            }
+        }
+
+        // 测试成功后关闭模态框
+        setTimeout(() => {
+            if (result.success) {
+                closeConfigModal();
+                hideStatus();
+            }
+        }, 1500);
+    }).catch(error => {
+        if (statusEl) {
+            statusEl.textContent = '配置失败: ' + error.message;
+            statusEl.style.color = '#ff4444';
+        }
+        setTimeout(() => { hideStatus(); }, 5000);
+    });
+}
+
+function showConfigModal() { document.getElementById('config-modal').style.display = 'block'; }
+function closeConfigModal() { document.getElementById('config-modal').style.display = 'none'; }
+function closeDifyConfig() { document.getElementById('dify-config-modal').style.display = 'none'; }
+function saveDifyConfig() {
+    localStorage.setItem('difyApiKey', document.getElementById('dify-api-key').value.trim());
+    localStorage.setItem('difyWorkflowId', document.getElementById('dify-workflow-id').value.trim());
+    localStorage.setItem('difyBaseUrl', document.getElementById('dify-base-url').value.trim() || 'https://api.dify.ai/v1');
+    showStatus('Dify 配置已保存', 'success');
+    setTimeout(() => { closeDifyConfig(); hideStatus(); }, 1500);
+}
+function showStatus(message, type) { const el = document.getElementById('config-status'); if (el) { el.textContent = message; el.style.color = type === 'error' ? '#ff4444' : '#4CAF50'; } }
+function hideStatus() { const el = document.getElementById('config-status'); if (el) el.textContent = ''; }
+
+// ==================== 标签页切换 ====================
+
+function showTab(tabName) {
+    document.querySelectorAll('.section').forEach(s => s.classList.remove('active'));
+    document.getElementById(tabName).classList.add('active');
+    document.querySelectorAll('.nav-btn').forEach(btn => {
+        btn.classList.remove('active');
+        if (btn.textContent.includes(tabName === 'home' ? '首页' : tabName === 'practice' ? '练习' : '批改')) btn.classList.add('active');
+    });
+    if (tabName === 'home') loadStats();
+    else if (tabName === 'grading') loadHistory();
+}
+
+// ==================== 练习模式相关 ====================
+
+function goToPractice() {
+    const apiKey = localStorage.getItem('apiKey');
+    if (!apiKey) { showStatus('请先配置 API Key', 'error'); showConfigModal(); return; }
+    showTab('practice');
+    // 设置待生成的题目主题
+    if (pendingTopic) {
+        document.getElementById('practice-topic').textContent = pendingTopic;
+        pendingTopic = null;
+    } else {
+        // 默认主题
+        document.getElementById('practice-topic').textContent = '经济类';
+    }
+    // 不自动请求题目，只清空界面
+    document.getElementById('source-text').innerHTML = '<div class="placeholder-text">点击下方"生成题目"按钮，AI 将为您生成题目</div>';
+    document.getElementById('target-text').value = '';
+    document.getElementById('grading-content').innerHTML = '<div class="placeholder-text">提交译文后，AI 将为您批改并给出评分与建议</div>';
+    document.getElementById('grade-score').textContent = '--';
+    resetTimer();
+}
+
+// 获取当前主题
+function getCurrentTopic() {
+    const btn = event?.currentTarget || document.getElementById('practice-topic')?.previousElementSibling?.lastElementChild;
+    const topicEl = document.getElementById('practice-topic');
+    if (topicEl && topicEl.textContent) {
+        return topicEl.textContent.replace('生成：', '').trim();
+    }
+    return '经济类';
+}
+
+// 从当前主题生成题目
+function generateQuestionFromTopic() {
+    const topic = document.getElementById('practice-topic')?.textContent.trim() || '经济类';
+    generateQuestion(topic);
+}
+
+// 获取服务商 API URL
+function getApiUrl() {
+    const provider = localStorage.getItem('apiProvider') || 'aliyun';
+    return (API_PROVIDERS[provider] || API_PROVIDERS.aliyun).url;
+}
+
+// 选择主题进入练习页面（不立即生成题目）
+function selectTopicForPractice(topic) {
+    const apiKey = localStorage.getItem('apiKey');
+    if (!apiKey) { showStatus('请先配置 API Key', 'error'); showConfigModal(); return; }
+    pendingTopic = topic;
+    goToPractice();
+}
+
+async function callAPI(messages, temperature = 0.7) {
+    const apiKey = localStorage.getItem('apiKey');
+    const modelName = localStorage.getItem('modelName') || 'qwen3-coder-next';
+    const apiUrl = getApiUrl();
+    const provider = localStorage.getItem('apiProvider') || 'aliyun';
+
+    if (!apiKey) throw new Error('请先配置 API Key');
+
+    try {
+        const response = await fetch(apiUrl, {
+            method: 'POST',
+            headers: {
+                'Authorization': 'Bearer ' + apiKey,
+                'Content-Type': 'application/json'
+            },
+            body: JSON.stringify({
+                model: modelName,
+                messages: messages,
+                temperature: temperature
+            })
+        });
+
+        const data = await response.json();
+
+        if (!response.ok) {
+            throw new Error(data.error?.message || 'API 请求失败');
+        }
+
+        // 兼容不同 API 格式
+        if (data.output && data.output.choices && data.output.choices.length > 0) {
+            return data.output.choices[0].message.content;
+        }
+        if (data.choices && data.choices.length > 0) {
+            return data.choices[0].message.content;
+        }
+        throw new Error('无法解析 API 返回结果');
+
+    } catch (error) {
+        console.error('API Error:', error);
+        throw new Error('API 调用失败: ' + error.message);
+    }
+}
+
+async function generateQuestion(topic) {
+    showTab('practice');
+    const generatingIndicator = document.getElementById('generating-indicator');
+    const sourceTextEl = document.getElementById('source-text');
+    const apiKey = localStorage.getItem('apiKey');
+    if (!apiKey) { sourceTextEl.innerHTML = '<p class="error-message">错误: 请先配置阿里云 API Key</p><p class="hint">点击左上角配置按钮填写 API Key</p>'; showConfigModal(); return; }
+    generatingIndicator.style.display = 'flex';
+    try {
+        const prompt = '你是一名专业的 CATTI 二级笔译考试命题专家。请为 "' + topic + '" 类主题生成一道中译英翻译题。要求：1. 难度适中 2. 原文 50-80 字 3. 提供参考译文。请以 JSON 格式返回：{"topic":"主题","source_text":"中文原文","reference_translation":"英文译文","difficulty":"难度","keywords":["关键词"]}';
+        const messages = [{ role: 'system', content: '你是一个专业的翻译考试命题专家。请严格按照要求返回 JSON 格式。' }, { role: 'user', content: prompt }];
+        const response = await callAPI(messages, 0.7);
+        let question;
+        const jsonMatch = response.match(/\{[\s\S]*\}/);
+        if (jsonMatch) question = JSON.parse(jsonMatch[0]); else throw new Error('无法解析 AI 返回的题目格式');
+        currentQuestion = { topic: question.topic || '通用', source_text: question.source_text || response, reference_translation: question.reference_translation || '参考译文待生成', difficulty: question.difficulty || '中等', keywords: question.keywords || ['通用'] };
+        sourceTextEl.innerHTML = '<p>' + escapeHtml(currentQuestion.source_text) + '</p>';
+        document.getElementById('practice-topic').textContent = currentQuestion.topic;
+        document.getElementById('source-lang').textContent = '中文';
+        document.getElementById('grading-content').innerHTML = '<div class="placeholder-text">请输入译文后点击"提交批改"</div>';
+        document.getElementById('grade-score').textContent = '--';
+        // 显示提交批改按钮
+        const submitBtn = document.getElementById('submit-btn');
+        if (submitBtn) submitBtn.style.display = 'inline-block';
+    } catch (error) {
+        sourceTextEl.innerHTML = '<p class="error-message">错误: ' + escapeHtml(error.message) + '</p><p class="hint">请检查 API Key 是否正确</p>';
+    } finally { generatingIndicator.style.display = 'none'; }
+}
+
+async function generateNextQuestion() { const topic = document.getElementById('practice-topic').textContent || '经济类'; await generateQuestion(topic); const submitBtn = document.getElementById('submit-btn'); if (submitBtn) submitBtn.style.display = 'none'; }
+
+// ==================== 译文输入相关 ====================
+
+function clearTranslation() { document.getElementById('target-text').value = ''; updateWordCount(); document.getElementById('grading-content').innerHTML = '<div class="placeholder-text">请输入译文后点击"提交批改"</div>'; document.getElementById('grade-score').textContent = '--'; const submitBtn = document.getElementById('submit-btn'); if (submitBtn) submitBtn.style.display = 'none'; }
+function copySource() { if (currentQuestion && currentQuestion.source_text) { navigator.clipboard.writeText(currentQuestion.source_text).then(() => showStatus('原文已复制', 'success')).catch(() => showStatus('复制失败', 'error')); } }
+function updateWordCount() { const text = document.getElementById('target-text').value; document.getElementById('word-count').textContent = text.replace(/\s/g, '').length + ' 字'; }
+
+// ==================== 计时器 ====================
+
+function startTimer() { if (practiceTimer) clearInterval(practiceTimer); practiceTimer = setInterval(() => { practiceElapsedTime++; const m = Math.floor(practiceElapsedTime / 60), s = practiceElapsedTime % 60; document.getElementById('timer').textContent = String(m).padStart(2, '0') + ':' + String(s).padStart(2, '0'); }, 1000); }
+function resetTimer() { if (practiceTimer) clearInterval(practiceTimer); practiceElapsedTime = 0; document.getElementById('timer').textContent = '00:00'; }
+
+// ==================== 提交批改 ====================
+
+async function submitForGrading() {
+    const userText = document.getElementById('target-text').value.trim();
+    if (!userText) { showStatus('请先输入译文', 'error'); return; }
+    if (!currentQuestion) { showStatus('请先生成题目', 'error'); return; }
+    document.getElementById('practice-progress').style.width = '100%';
+    document.getElementById('practice-text').textContent = '1/1';
+    const generatingIndicator = document.getElementById('generating-indicator');
+    generatingIndicator.style.display = 'flex';
+    try {
+        const prompt = '【原文】' + currentQuestion.source_text + '\n\n【参考译文】' + currentQuestion.reference_translation + '\n\n【考生译文】' + userText + '\n\n请从准确性、完整性、流畅度、语法、词汇五个维度评分，并以 JSON 格式返回：{"score":0-100,"comments":"总体评价","accuracy_score":0-25,"completeness_score":0-25,"fluency_score":0-25,"grammar_score":0-25,"vocabulary_score":0-25,"grammar_mistakes":[],"suggestions":[]}';
+        const messages = [{ role: 'system', content: '你是一个专业的翻译考试阅卷专家。请严格按照要求返回 JSON 格式。' }, { role: 'user', content: prompt }];
+        const response = await callAPI(messages, 0.5);
+        let grading;
+        const jsonMatch = response.match(/\{[\s\S]*\}/);
+        if (jsonMatch) grading = JSON.parse(jsonMatch[0]); else throw new Error('无法解析 AI 返回的批改格式');
+        const ng = { score: Math.min(100, Math.max(0, grading.score || 70)), comments: grading.comments || response, accuracy_score: Math.min(25, Math.max(0, grading.accuracy_score || 17)), completeness_score: Math.min(25, Math.max(0, grading.completeness_score || 17)), fluency_score: Math.min(25, Math.max(0, grading.fluency_score || 17)), grammar_score: Math.min(25, Math.max(0, grading.grammar_score || 17)), vocabulary_score: Math.min(25, Math.max(0, grading.vocabulary_score || 16)), grammar_mistakes: grading.grammar_mistakes || [], suggestions: grading.suggestions || [] };
+        displayGradingResult(ng);
+        saveToHistory(currentQuestion.topic, ng.score);
+        showStatus('批改完成', 'success');
+    } catch (error) {
+        document.getElementById('grading-content').innerHTML = '<div class="error-message">错误: ' + escapeHtml(error.message) + '</div><div class="hint">请检查 API Key 配置</div>';
+    } finally { generatingIndicator.style.display = 'none'; }
+}
+
+function displayGradingResult(grading) {
+    const html = '<div class="grading-header"><div class="score-circle"><span class="score-value">' + grading.score + '</span><span class="score-label">分</span></div></div><div class="grading-details"><div class="score-grid"><div class="score-item"><span class="score-item-label">准确度</span><div class="score-bar"><div class="score-bar-fill" style="width:' + (grading.accuracy_score * 4) + '%"></div><span class="score-bar-value">' + grading.accuracy_score + '/25</span></div></div><div class="score-item"><span class="score-item-label">完整性</span><div class="score-bar"><div class="score-bar-fill" style="width:' + (grading.completeness_score * 4) + '%"></div><span class="score-bar-value">' + grading.completeness_score + '/25</span></div></div><div class="score-item"><span class="score-item-label">流畅度</span><div class="score-bar"><div class="score-bar-fill" style="width:' + (grading.fluency_score * 4) + '%"></div><span class="score-bar-value">' + grading.fluency_score + '/25</span></div></div><div class="score-item"><span class="score-item-label">语法</span><div class="score-bar"><div class="score-bar-fill" style="width:' + (grading.grammar_score * 4) + '%"></div><span class="score-bar-value">' + grading.grammar_score + '/25</span></div></div><div class="score-item"><span class="score-item-label">词汇</span><div class="score-bar"><div class="score-bar-fill" style="width:' + (grading.vocabulary_score * 4) + '%"></div><span class="score-bar-value">' + grading.vocabulary_score + '/25</span></div></div></div></div><div class="grading-feedback"><h4>总体评价</h4><p class="comments-text">' + escapeHtml(grading.comments) + '</p></div>' + (grading.grammar_mistakes && grading.grammar_mistakes.length > 0 ? '<div class="grading-feedback"><h4>语法错误</h4><ul class="mistakes-list">' + grading.grammar_mistakes.map(m => '<li>' + escapeHtml(m) + '</li>').join('') + '</ul></div>' : '') + (grading.suggestions && grading.suggestions.length > 0 ? '<div class="grading-feedback"><h4>改进建议</h4><ul class="suggestions-list">' + grading.suggestions.map(s => '<li>' + escapeHtml(s) + '</li>').join('') + '</ul></div>' : '');
+    document.getElementById('grading-content').innerHTML = html;
+    document.getElementById('grade-score').textContent = grading.score;
+}
+
+// ==================== 统计数据 ====================
+
+function loadStats() {
+    try {
+        const history = JSON.parse(localStorage.getItem('gradingHistory') || '[]');
+        const total = history.length;
+        const avgScore = history.length > 0 ? Math.round(history.reduce((sum, h) => sum + h.score, 0) / history.length) : 0;
+        const el = document.getElementById('total-practices'); if (el) el.textContent = total;
+        const el2 = document.getElementById('avg-score'); if (el2) el2.textContent = avgScore;
+        const el3 = document.getElementById('study-time'); if (el3) el3.textContent = Math.floor(total * 10 / 60) + 'h';
+    } catch (e) { console.error('加载统计数据失败:', e); }
+}
+
+function saveToHistory(topic, score) {
+    const history = JSON.parse(localStorage.getItem('gradingHistory') || '[]');
+    history.unshift({ topic: topic, score: score, timestamp: new Date().toISOString() });
+    localStorage.setItem('gradingHistory', JSON.stringify(history.slice(0, 50)));
+}
+
+// ==================== 批改历史 ====================
+
+function loadHistory() {
+    try {
+        const container = document.getElementById('grading-history');
+        if (!container) return;
+        const history = JSON.parse(localStorage.getItem('gradingHistory') || '[]');
+        if (history.length === 0) { container.innerHTML = '<div class="empty-history">暂无批改记录</div>'; return; }
+        container.innerHTML = history.map(r => '<div class="history-item"><div class="history-header"><span class="history-topic">' + escapeHtml(r.topic) + '</span><span class="history-score ' + getScoreClass(r.score) + '">' + r.score + '分</span></div><div class="history-meta"><span class="history-time">' + formatTime(r.timestamp) + '</span></div></div>').join('');
+    } catch (e) { console.error('加载历史记录失败:', e); }
+}
+
+function clearHistory() { if (confirm('确定要清空所有批改历史吗？')) { localStorage.removeItem('gradingHistory'); document.getElementById('grading-history').innerHTML = '<div class="empty-history">暂无批改记录</div>'; loadStats(); } }
+
+// ==================== 工具函数 ====================
+
+function escapeHtml(text) { if (!text) return ''; return text.replace(/&/g, '&amp;').replace(/</g, '&lt;').replace(/>/g, '&gt;').replace(/"/g, '&quot;').replace(/'/g, '&#039;'); }
+function getScoreClass(score) { if (score >= 85) return 'score-high'; if (score >= 70) return 'score-medium'; return 'score-low'; }
+function formatTime(ts) { if (!ts) return ''; const d = new Date(ts); return d.getFullYear() + '-' + String(d.getMonth() + 1).padStart(2, '0') + '-' + String(d.getDate()).padStart(2, '0') + ' ' + String(d.getHours()).padStart(2, '0') + ':' + String(d.getMinutes()).padStart(2, '0'); }
+
+// 页面初始化
+document.addEventListener('DOMContentLoaded', () => {
+    loadConfig();
+    loadStats();
+    loadHistory();
+    document.getElementById('target-text').addEventListener('input', updateWordCount);
+    startTimer();
+});
+    </script>
+</body>
+</html>
