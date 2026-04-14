@@ -952,6 +952,40 @@ body {
     background: #c7d2fe;
 }
 
+/* 语言对选择器样式 */
+.language-select {
+    min-width: 160px;
+}
+
+.language-select select {
+    width: 100%;
+    padding: 8px 12px;
+    border: 1px solid rgba(0, 0, 0, 0.1);
+    border-radius: 8px;
+    background: white;
+    font-size: 14px;
+    color: #1d1d1f;
+    cursor: pointer;
+    transition: all 0.3s ease;
+    appearance: none;
+    background-image: url("data:image/svg+xml,%3Csvg width='12' height='12' viewBox='0 0 24 24' fill='none' stroke='%236366f1' stroke-width='2'%3E%3Cpolyline points='6 9 12 15 18 9'%3E%3C/polyline%3E%3C/svg%3E");
+    background-repeat: no-repeat;
+    background-position: right 12px center;
+    background-size: 12px;
+    padding-right: 36px;
+}
+
+.language-select select:hover {
+    border-color: rgba(99, 102, 241, 0.3);
+    box-shadow: 0 2px 8px rgba(99, 102, 241, 0.1);
+}
+
+.language-select select:focus {
+    border-color: #6366f1;
+    outline: none;
+    box-shadow: 0 0 0 3px rgba(99, 102, 241, 0.1);
+}
+
 /* 响应式设计 */
 @media (max-width: 768px) {
     .header {

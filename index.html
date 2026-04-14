@@ -100,6 +100,12 @@
                         <option value="文化类">文化类</option>
                     </select>
                 </div>
+                <div class="language-select">
+                    <select id="language-pair" onchange="changeLanguagePair()">
+                        <option value="zh-en">中译英 (Chinese to English)</option>
+                        <option value="en-zh">英译中 (English to Chinese)</option>
+                    </select>
+                </div>
             </div>
 
             <!-- AI 生成中提示 -->
@@ -335,13 +341,21 @@ const API_PROVIDERS = {
 // ==================== Prompt 函数 ====================
 
 // 出题 Prompt (generator)
-function getGeneratorPrompt(topic, difficulty = '进阶') {
+function getGeneratorPrompt(topic, difficulty = '进阶', langPair = 'zh-en') {
+    const isZhEn = langPair === 'zh-en';
+    const sourceLang = isZhEn ? '中文' : '英文';
+    const targetLang = isZhEn ? '英文' : '中文';
+    const taskDesc = isZhEn ? '生成一道中译英翻译题' : '生成一道英译中翻译题';
+    const sourceCount = isZhEn ? '550-700英文词' : '500-650中文字符';
+    const sourceDesc = isZhEn ? '"中文原文（完整段落）"' : '"英文原文（完整段落）"';
+    const refDesc = isZhEn ? '"英文参考译文（完整段落）"' : '"中文参考译文（完整段落）"';
+
     return `你是一名专业的CATTI二级笔译官方命题专家，熟悉《全国翻译专业资格（水平）考试大纲》、历年真题命题逻辑及文本选材标准。
 
 【任务要求】
-1. 为 "${topic}" 类主题生成一道中译英翻译题
+1. 为 "${topic}" 类主题${taskDesc}
 2. 难度等级：${difficulty}
-3. 原文词数：550-700英文词
+3. 原文词数：${sourceCount}
 4. 文本长度：段落形式，保留原有标点、段落、数字格式
 
 【文本要求】
@@ -366,8 +380,8 @@ function getGeneratorPrompt(topic, difficulty = '进阶') {
 请以严格JSON格式返回，不含任何其他内容：
 {
     "topic": "主题名称",
-    "source_text": "中文原文（完整段落）",
-    "reference_translation": "英文参考译文（完整段落）",
+    "source_text": ${sourceDesc},
+    "reference_translation": ${refDesc},
     "difficulty": "基础|进阶|冲刺",
     "core_points": ["考点1", "考点2", "考点3"],
     "source_type": "新闻报道|政府文件|学术论文|媒体评论|其他",
@@ -379,7 +393,12 @@ function getGeneratorPrompt(topic, difficulty = '进阶') {
 }
 
 // 阅卷 Prompt (evaluator)
-function getEvaluatorPrompt(sourceText, referenceTranslation, userTranslation) {
+function getEvaluatorPrompt(sourceText, referenceTranslation, userTranslation, langPair = 'zh-en') {
+    const isZhEn = langPair === 'zh-en';
+    const sourceLang = isZhEn ? '原文' : 'Original';
+    const refLang = isZhEn ? '参考译文' : 'Reference Translation';
+    const userLang = isZhEn ? '考生译文' : 'User Translation';
+
     return `你是一名专业的CATTI二级笔译首席阅卷人，严格遵循《全国翻译专业资格（水平）考试大纲》及官方阅卷流程。
 
 【评卷核心原则】（阅卷人视角）
@@ -432,13 +451,13 @@ function getEvaluatorPrompt(sourceText, referenceTranslation, userTranslation) {
 ## 你的任务
 请严格使用中文对考生译文进行评分，聚焦"无扣分点"而非追求完美。还要给出你觉得合适的表达。
 
-【原文】
+【${sourceLang}】
 ${sourceText}
 
-【参考译文】
+【${refLang}】
 ${referenceTranslation}
 
-【考生译文】
+【${userLang}】
 ${userTranslation}
 
 【评分要求】
@@ -645,6 +664,13 @@ function goToPractice() {
     const apiKey = localStorage.getItem('apiKey');
     if (!apiKey) { showStatus('请先配置 API Key', 'error'); showConfigModal(); return; }
     showTab('practice');
+
+    // 设置默认语言对
+    if (!localStorage.getItem('languagePair')) {
+        localStorage.setItem('languagePair', 'zh-en');
+    }
+    document.getElementById('language-pair').value = localStorage.getItem('languagePair') || 'zh-en';
+
     // 设置待生成的题目主题
     if (pendingTopic) {
         document.getElementById('practice-topic').value = pendingTopic;
@@ -668,6 +694,25 @@ function getCurrentTopic() {
         return select.value;
     }
     return '经济类';
+}
+
+// 获取当前语言对
+function getCurrentLanguagePair() {
+    const select = document.getElementById('language-pair');
+    if (select && select.value) {
+        return select.value;
+    }
+    return 'zh-en';
+}
+
+// 切换语言对
+function changeLanguagePair() {
+    const langPair = getCurrentLanguagePair();
+    localStorage.setItem('languagePair', langPair);
+    document.getElementById('grading-content').innerHTML = '<div class="placeholder-text">请先生成题目</div>';
+    document.getElementById('grade-score').textContent = '--';
+    const submitBtn = document.getElementById('submit-btn');
+    if (submitBtn) submitBtn.style.display = 'none';
 }
 
 // 切换练习主题
@@ -752,9 +797,13 @@ async function generateQuestion(topic) {
     const apiKey = localStorage.getItem('apiKey');
     if (!apiKey) { sourceTextEl.innerHTML = '<p class="error-message">错误: 请先配置阿里云 API Key</p><p class="hint">点击左上角配置按钮填写 API Key</p>'; showConfigModal(); return; }
     generatingIndicator.style.display = 'flex';
+
+    // 获取语言对
+    const langPair = getCurrentLanguagePair();
+
     try {
-        // 使用出题 Prompt (generator)
-        const prompt = getGeneratorPrompt(topic, '进阶');
+        // 使用出题 Prompt (generator)，传入语言对
+        const prompt = getGeneratorPrompt(topic, '进阶', langPair);
         const messages = [{ role: 'system', content: '你是一名专业的CATTI二级笔译官方命题专家。请严格按照要求生成高质量模拟试题。' }, { role: 'user', content: prompt }];
         const response = await callAPI(messages, 0.7);
         let question;
@@ -767,11 +816,14 @@ async function generateQuestion(topic) {
             difficulty: question.difficulty || '进阶',
             core_points: question.core_points || question.keywords || ['通用考点'],
             source_type: question.source_type || '原创',
-            word_count: question.word_count || 0
+            word_count: question.word_count || 0,
+            lang_pair: langPair
         };
         sourceTextEl.innerHTML = '<p>' + escapeHtml(currentQuestion.source_text) + '</p>';
         document.getElementById('practice-topic').value = currentQuestion.topic;
-        document.getElementById('source-lang').textContent = '中文';
+        // 根据语言对更新源语言显示
+        const isZhEn = langPair === 'zh-en';
+        document.getElementById('source-lang').textContent = isZhEn ? '中文' : 'English';
         document.getElementById('grading-content').innerHTML = '<div class="placeholder-text">请输入译文后点击"提交批改"</div>';
         document.getElementById('grade-score').textContent = '--';
         // 显示提交批改按钮
@@ -782,7 +834,7 @@ async function generateQuestion(topic) {
     } finally { generatingIndicator.style.display = 'none'; }
 }
 
-async function generateNextQuestion() { const topic = getCurrentTopic(); await generateQuestion(topic); const submitBtn = document.getElementById('submit-btn'); if (submitBtn) submitBtn.style.display = 'none'; }
+async function generateNextQuestion() { const topic = getCurrentTopic(); const langPair = getCurrentLanguagePair(); await generateQuestion(topic); const submitBtn = document.getElementById('submit-btn'); if (submitBtn) submitBtn.style.display = 'none'; }
 
 // ==================== 译文输入相关 ====================
 
@@ -806,8 +858,9 @@ async function submitForGrading() {
     const generatingIndicator = document.getElementById('generating-indicator');
     generatingIndicator.style.display = 'flex';
     try {
-        // 使用阅卷 Prompt (evaluator)
-        const prompt = getEvaluatorPrompt(currentQuestion.source_text, currentQuestion.reference_translation, userText);
+        // 使用阅卷 Prompt (evaluator)，传入语言对
+        const langPair = currentQuestion.lang_pair || 'zh-en';
+        const prompt = getEvaluatorPrompt(currentQuestion.source_text, currentQuestion.reference_translation, userText, langPair);
         const messages = [{ role: 'system', content: '你是一名专业的CATTI二级笔译阅卷专家。请严格按照 CATTI 二级评分标准进行评分。' }, { role: 'user', content: prompt }];
         const response = await callAPI(messages, 0.5);
         let grading;
