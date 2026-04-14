@@ -105,7 +105,7 @@
             <!-- AI 生成中提示 -->
             <div id="generating-indicator" class="generating-indicator" style="display:none;">
                 <div class="spinner"></div>
-                <span>AI 正在为您生成题目...</span>
+                <span>AI 正在为您生成...</span>
             </div>
 
             <div class="translation-container">
@@ -247,6 +247,22 @@
                         <button class="btn btn-secondary" onclick="closeDifyConfig()">取消</button>
                         <button class="btn btn-primary" onclick="saveDifyConfig()">保存配置</button>
                     </div>
+                </div>
+            </div>
+        </div>
+
+        <!-- 批改历史详情模态框 -->
+        <div id="grading-detail-modal" class="modal">
+            <div class="modal-content modal-large">
+                <div class="modal-header">
+                    <h3>批改详情</h3>
+                    <button class="close-btn" onclick="closeGradingDetail()">&times;</button>
+                </div>
+                <div class="modal-body" id="grading-detail-content">
+                    <!-- 详情内容 -->
+                </div>
+                <div class="modal-footer">
+                    <button class="btn btn-secondary" onclick="closeGradingDetail()">关闭</button>
                 </div>
             </div>
         </div>
@@ -414,7 +430,7 @@ function getEvaluatorPrompt(sourceText, referenceTranslation, userTranslation) {
 - 真正生成成绩的环节，CATTI阅卷采用双评机制，每道题会有两名专家进行评阅，通过差异控制机制产生最终成绩。质检组的专家会通过网评系统实时进行监控，控制阅卷质量。
 
 ## 你的任务
-请严格使用中文对考生译文进行评分，聚焦"无扣分点"而非追求完美。
+请严格使用中文对考生译文进行评分，聚焦"无扣分点"而非追求完美。还要给出你觉得合适的表达。
 
 【原文】
 ${sourceText}
@@ -799,7 +815,7 @@ async function submitForGrading() {
         if (jsonMatch) grading = JSON.parse(jsonMatch[0]); else throw new Error('无法解析 AI 返回的批改格式');
         const ng = { score: Math.min(100, Math.max(0, grading.score || 70)), comments: grading.comments || response, accuracy_score: Math.min(25, Math.max(0, grading.accuracy_score || 17)), completeness_score: Math.min(25, Math.max(0, grading.completeness_score || 17)), fluency_score: Math.min(25, Math.max(0, grading.fluency_score || 17)), grammar_score: Math.min(25, Math.max(0, grading.grammar_score || 17)), vocabulary_score: Math.min(25, Math.max(0, grading.vocabulary_score || 16)), grammar_mistakes: grading.grammar_mistakes || [], suggestions: grading.suggestions || [] };
         displayGradingResult(ng);
-        saveToHistory(currentQuestion.topic, ng.score);
+        saveToHistory(currentQuestion.topic, ng.score, currentQuestion.source_text, currentQuestion.reference_translation, userText, ng);
         showStatus('批改完成', 'success');
     } catch (error) {
         document.getElementById('grading-content').innerHTML = '<div class="error-message">错误: ' + escapeHtml(error.message) + '</div><div class="hint">请检查 API Key 配置</div>';
@@ -825,10 +841,30 @@ function loadStats() {
     } catch (e) { console.error('加载统计数据失败:', e); }
 }
 
-function saveToHistory(topic, score) {
+function saveToHistory(topic, score, sourceText, referenceTranslation, userTranslation, grading) {
     const history = JSON.parse(localStorage.getItem('gradingHistory') || '[]');
+    const newIndex = history.length;
     history.unshift({ topic: topic, score: score, timestamp: new Date().toISOString() });
     localStorage.setItem('gradingHistory', JSON.stringify(history.slice(0, 50)));
+
+    // 保存详情数据
+    const detail = {
+        source_text: sourceText || '',
+        reference_translation: referenceTranslation || '',
+        user_translation: userTranslation || '',
+        grading: grading || {
+            score: score,
+            comments: '',
+            accuracy_score: 0,
+            completeness_score: 0,
+            fluency_score: 0,
+            grammar_score: 0,
+            vocabulary_score: 0,
+            grammar_mistakes: [],
+            suggestions: []
+        }
+    };
+    localStorage.setItem('gradingDetail_' + newIndex, JSON.stringify(detail));
 }
 
 // ==================== 批改历史 ====================
@@ -839,8 +875,116 @@ function loadHistory() {
         if (!container) return;
         const history = JSON.parse(localStorage.getItem('gradingHistory') || '[]');
         if (history.length === 0) { container.innerHTML = '<div class="empty-history">暂无批改记录</div>'; return; }
-        container.innerHTML = history.map(r => '<div class="history-item"><div class="history-header"><span class="history-topic">' + escapeHtml(r.topic) + '</span><span class="history-score ' + getScoreClass(r.score) + '">' + r.score + '分</span></div><div class="history-meta"><span class="history-time">' + formatTime(r.timestamp) + '</span></div></div>').join('');
+        container.innerHTML = history.map((r, index) =>
+            '<div class="history-item" onclick="viewGradingDetail(' + index + ')">' +
+            '<div class="history-header">' +
+            '<span class="history-topic">' + escapeHtml(r.topic) + '</span>' +
+            '<span class="history-score ' + getScoreClass(r.score) + '">' + r.score + '分</span>' +
+            '</div>' +
+            '<div class="history-meta">' +
+            '<span class="history-time">' + formatTime(r.timestamp) + '</span>' +
+            '<span class="view-btn">查看详情</span>' +
+            '</div>' +
+            '</div>'
+        ).join('');
     } catch (e) { console.error('加载历史记录失败:', e); }
+}
+
+// 查看批改详情
+function viewGradingDetail(index) {
+    const history = JSON.parse(localStorage.getItem('gradingHistory') || '[]');
+    const record = history[index];
+    if (!record) return;
+
+    // 从 localStorage 中查找详情数据
+    const detailKey = 'gradingDetail_' + index;
+    const detail = JSON.parse(localStorage.getItem(detailKey) || '{}');
+
+    // 如果详情不存在，从历史记录中重建
+    if (!detail.source_text) {
+        detail.source_text = '原文已过期';
+        detail.reference_translation = '参考译文已过期';
+        detail.user_translation = '译文已过期';
+        detail.grading = {
+            score: record.score,
+            comments: '批改评论',
+            accuracy_score: 0,
+            completeness_score: 0,
+            fluency_score: 0,
+            grammar_score: 0,
+            vocabulary_score: 0,
+            grammar_mistakes: [],
+            suggestions: []
+        };
+    }
+
+    const detailContent = document.getElementById('grading-detail-content');
+    detailContent.innerHTML = generateGradingDetailHTML(record, detail);
+    document.getElementById('grading-detail-modal').style.display = 'flex';
+}
+
+// 生成详情页面 HTML
+function generateGradingDetailHTML(record, detail) {
+    const grading = detail.grading || {
+        score: record.score,
+        comments: '暂无详细评论',
+        accuracy_score: 0,
+        completeness_score: 0,
+        fluency_score: 0,
+        grammar_score: 0,
+        vocabulary_score: 0,
+        grammar_mistakes: [],
+        suggestions: []
+    };
+
+    let html = '<div class="detail-header">' +
+        '<h4>' + escapeHtml(record.topic) + ' - ' + record.score + '分</h4>' +
+        '<span class="detail-time">' + formatTime(record.timestamp) + '</span>' +
+        '</div>';
+
+    // 评分详情
+    html += '<div class="detail-score-grid">' +
+        '<div class="score-item"><span>准确度</span><div class="score-bar"><div style="width:' + (grading.accuracy_score * 2.5) + '%"></div><span>' + grading.accuracy_score + '/40</span></div></div>' +
+        '<div class="score-item"><span>完整性</span><div class="score-bar"><div style="width:' + (grading.completeness_score * 5) + '%"></div><span>' + grading.completeness_score + '/20</span></div></div>' +
+        '<div class="score-item"><span>流畅度</span><div class="score-bar"><div style="width:' + (grading.fluency_score * 3.33) + '%"></div><span>' + grading.fluency_score + '/30</span></div></div>' +
+        '<div class="score-item"><span>语法</span><div class="score-bar"><div style="width:' + (grading.grammar_score * 4) + '%"></div><span>' + grading.grammar_score + '/25</span></div></div>' +
+        '<div class="score-item"><span>词汇</span><div class="score-bar"><div style="width:' + (grading.vocabulary_score * 6.67) + '%"></div><span>' + grading.vocabulary_score + '/15</span></div></div>' +
+        '</div>';
+
+    // 原文
+    if (detail.source_text && detail.source_text !== '原文已过期') {
+        html += '<div class="detail-section"><h4>原文</h4><div class="detail-text">' + escapeHtml(detail.source_text) + '</div></div>';
+    }
+
+    // 参考译文
+    if (detail.reference_translation && detail.reference_translation !== '参考译文已过期') {
+        html += '<div class="detail-section"><h4>参考译文</h4><div class="detail-text">' + escapeHtml(detail.reference_translation) + '</div></div>';
+    }
+
+    // 用户译文
+    if (detail.user_translation && detail.user_translation !== '译文已过期') {
+        html += '<div class="detail-section"><h4>用户译文</h4><div class="detail-text user-text">' + escapeHtml(detail.user_translation) + '</div></div>';
+    }
+
+    // 评分结果
+    html += '<div class="detail-section"><h4>总体评价</h4><div class="detail-text">' + escapeHtml(grading.comments) + '</div></div>';
+
+    // 语法错误
+    if (grading.grammar_mistakes && grading.grammar_mistakes.length > 0) {
+        html += '<div class="detail-section"><h4>语法错误</h4><ul class="mistakes-list">' + grading.grammar_mistakes.map(m => '<li>' + escapeHtml(m) + '</li>').join('') + '</ul></div>';
+    }
+
+    // 改进建议
+    if (grading.suggestions && grading.suggestions.length > 0) {
+        html += '<div class="detail-section"><h4>改进建议</h4><ul class="suggestions-list">' + grading.suggestions.map(s => '<li>' + escapeHtml(s) + '</li>').join('') + '</ul></div>';
+    }
+
+    return html;
+}
+
+// 关闭详情模态框
+function closeGradingDetail() {
+    document.getElementById('grading-detail-modal').style.display = 'none';
 }
 
 function clearHistory() { if (confirm('确定要清空所有批改历史吗？')) { localStorage.removeItem('gradingHistory'); document.getElementById('grading-history').innerHTML = '<div class="empty-history">暂无批改记录</div>'; loadStats(); } }
