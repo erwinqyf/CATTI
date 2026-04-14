@@ -842,13 +842,14 @@ function loadStats() {
 }
 
 function saveToHistory(topic, score, sourceText, referenceTranslation, userTranslation, grading) {
+    // 先加载历史记录
     const history = JSON.parse(localStorage.getItem('gradingHistory') || '[]');
-    const newIndex = history.length;
-    history.unshift({ topic: topic, score: score, timestamp: new Date().toISOString() });
-    localStorage.setItem('gradingHistory', JSON.stringify(history.slice(0, 50)));
 
-    // 保存详情数据
-    const detail = {
+    // 创建包含完整详情的新记录
+    const newRecord = {
+        topic: topic,
+        score: score,
+        timestamp: new Date().toISOString(),
         source_text: sourceText || '',
         reference_translation: referenceTranslation || '',
         user_translation: userTranslation || '',
@@ -864,7 +865,12 @@ function saveToHistory(topic, score, sourceText, referenceTranslation, userTrans
             suggestions: []
         }
     };
-    localStorage.setItem('gradingDetail_' + newIndex, JSON.stringify(detail));
+
+    // 添加到历史记录开头
+    history.unshift(newRecord);
+
+    // 保存最近 50 条
+    localStorage.setItem('gradingHistory', JSON.stringify(history.slice(0, 50)));
 }
 
 // ==================== 批改历史 ====================
@@ -896,18 +902,14 @@ function viewGradingDetail(index) {
     const record = history[index];
     if (!record) return;
 
-    // 从 localStorage 中查找详情数据
-    const detailKey = 'gradingDetail_' + index;
-    const detail = JSON.parse(localStorage.getItem(detailKey) || '{}');
-
-    // 如果详情不存在，从历史记录中重建
-    if (!detail.source_text) {
-        detail.source_text = '原文已过期';
-        detail.reference_translation = '参考译文已过期';
-        detail.user_translation = '译文已过期';
-        detail.grading = {
+    // 详情就在记录对象中
+    const detail = {
+        source_text: record.source_text || '',
+        reference_translation: record.reference_translation || '',
+        user_translation: record.user_translation || '',
+        grading: record.grading || {
             score: record.score,
-            comments: '批改评论',
+            comments: '暂无详细评论',
             accuracy_score: 0,
             completeness_score: 0,
             fluency_score: 0,
@@ -915,8 +917,8 @@ function viewGradingDetail(index) {
             vocabulary_score: 0,
             grammar_mistakes: [],
             suggestions: []
-        };
-    }
+        }
+    };
 
     const detailContent = document.getElementById('grading-detail-content');
     detailContent.innerHTML = generateGradingDetailHTML(record, detail);
