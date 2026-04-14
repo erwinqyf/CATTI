@@ -92,7 +92,14 @@
                     </div>
                     <div class="progress-text" id="practice-text">1/1</div>
                 </div>
-                <div class="topic-name" id="practice-topic">经济类</div>
+                <div class="topic-select">
+                    <select id="practice-topic" onchange="changePracticeTopic()">
+                        <option value="经济类">经济类</option>
+                        <option value="社会类">社会类</option>
+                        <option value="科技类">科技类</option>
+                        <option value="文化类">文化类</option>
+                    </select>
+                </div>
             </div>
 
             <!-- AI 生成中提示 -->
@@ -493,11 +500,11 @@ function goToPractice() {
     showTab('practice');
     // 设置待生成的题目主题
     if (pendingTopic) {
-        document.getElementById('practice-topic').textContent = pendingTopic;
+        document.getElementById('practice-topic').value = pendingTopic;
         pendingTopic = null;
     } else {
         // 默认主题
-        document.getElementById('practice-topic').textContent = '经济类';
+        document.getElementById('practice-topic').value = '经济类';
     }
     // 不自动请求题目，只清空界面
     document.getElementById('source-text').innerHTML = '<div class="placeholder-text">点击下方"生成题目"按钮，AI 将为您生成题目</div>';
@@ -509,17 +516,28 @@ function goToPractice() {
 
 // 获取当前主题
 function getCurrentTopic() {
-    const btn = event?.currentTarget || document.getElementById('practice-topic')?.previousElementSibling?.lastElementChild;
-    const topicEl = document.getElementById('practice-topic');
-    if (topicEl && topicEl.textContent) {
-        return topicEl.textContent.replace('生成：', '').trim();
+    const select = document.getElementById('practice-topic');
+    if (select && select.value) {
+        return select.value;
     }
     return '经济类';
 }
 
+// 切换练习主题
+function changePracticeTopic() {
+    const topic = getCurrentTopic();
+    document.getElementById('practice-topic').value = topic;
+    // 清空当前题目显示
+    document.getElementById('source-text').innerHTML = '<div class="placeholder-text">当前主题：' + topic + '，点击下方"生成题目"按钮，AI 将为您生成题目</div>';
+    document.getElementById('grading-content').innerHTML = '<div class="placeholder-text">请先生成题目</div>';
+    document.getElementById('grade-score').textContent = '--';
+    const submitBtn = document.getElementById('submit-btn');
+    if (submitBtn) submitBtn.style.display = 'none';
+}
+
 // 从当前主题生成题目
 function generateQuestionFromTopic() {
-    const topic = document.getElementById('practice-topic')?.textContent.trim() || '经济类';
+    const topic = getCurrentTopic();
     generateQuestion(topic);
 }
 
@@ -596,7 +614,7 @@ async function generateQuestion(topic) {
         if (jsonMatch) question = JSON.parse(jsonMatch[0]); else throw new Error('无法解析 AI 返回的题目格式');
         currentQuestion = { topic: question.topic || '通用', source_text: question.source_text || response, reference_translation: question.reference_translation || '参考译文待生成', difficulty: question.difficulty || '中等', keywords: question.keywords || ['通用'] };
         sourceTextEl.innerHTML = '<p>' + escapeHtml(currentQuestion.source_text) + '</p>';
-        document.getElementById('practice-topic').textContent = currentQuestion.topic;
+        document.getElementById('practice-topic').value = currentQuestion.topic;
         document.getElementById('source-lang').textContent = '中文';
         document.getElementById('grading-content').innerHTML = '<div class="placeholder-text">请输入译文后点击"提交批改"</div>';
         document.getElementById('grade-score').textContent = '--';
@@ -608,7 +626,7 @@ async function generateQuestion(topic) {
     } finally { generatingIndicator.style.display = 'none'; }
 }
 
-async function generateNextQuestion() { const topic = document.getElementById('practice-topic').textContent || '经济类'; await generateQuestion(topic); const submitBtn = document.getElementById('submit-btn'); if (submitBtn) submitBtn.style.display = 'none'; }
+async function generateNextQuestion() { const topic = getCurrentTopic(); await generateQuestion(topic); const submitBtn = document.getElementById('submit-btn'); if (submitBtn) submitBtn.style.display = 'none'; }
 
 // ==================== 译文输入相关 ====================
 
