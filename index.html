@@ -316,6 +316,137 @@ const API_PROVIDERS = {
     }
 };
 
+// ==================== Prompt 函数 ====================
+
+// 出题 Prompt (generator)
+function getGeneratorPrompt(topic, difficulty = '进阶') {
+    return `你是一名专业的CATTI二级笔译官方命题专家，熟悉《全国翻译专业资格（水平）考试大纲》、历年真题命题逻辑及文本选材标准。
+
+【任务要求】
+1. 为 "${topic}" 类主题生成一道中译英翻译题
+2. 难度等级：${difficulty}
+3. 原文词数：550-700英文词
+4. 文本长度：段落形式，保留原有标点、段落、数字格式
+
+【文本要求】
+- 题材范围：政治外交、宏观经济、社会发展、科技创新、文化历史、生态环境、国际组织文件、政策白皮书/报告节选
+- 优先来源：新华社、人民网、Government.cn、UN Documents、The Economist、BBC、Project Syndicate
+- 文本真实可译，无生造超纲词，不设"屠龙式"僻义
+- 必须明确标注2-3个**核心考点**（如：被动语态转换、四字格处理、长句切分、术语一致性、语体转换等）
+- 为原文作者/机构加[brackets]
+- 难度梯度：基础（句式规整，术语密度低，逻辑显性）/进阶（含2-3处长难句，中等术语密度，需语体转换）/冲刺（嵌套从句/文言残卷/文化负载项密集，考查逻辑重组与风格适配）
+- 原文不得来自常见教材或真题原文，须为原创或改写
+
+【命题原则】
+- 文本真实可译，无生僻超纲词，不设置"陷阱式"歧义
+- 每篇明确标注2–3个**核心考查点**（如：被动语态转换、四字格处理、长句切分、术语一致性）
+- 保留原文标点、段落、数字格式，模拟真实考场排版
+- 政治/政策类表述必须与国务院/外交部/《中国关键词》等标准译法一致
+- 难度、长度、题材、格式均须严格对标 CATTI 二级真题
+- 原文不得来自常见教材或真题原文，须为原创或改编
+- 出题后只输出试题，不输出任何分析、提示或答案
+
+【输出格式】
+请以严格JSON格式返回，不含任何其他内容：
+{
+    "topic": "主题名称",
+    "source_text": "中文原文（完整段落）",
+    "reference_translation": "英文参考译文（完整段落）",
+    "difficulty": "基础|进阶|冲刺",
+    "core_points": ["考点1", "考点2", "考点3"],
+    "source_type": "新闻报道|政府文件|学术论文|媒体评论|其他",
+    "word_count": 字数
+}
+
+【重要提示】
+出题后只输出JSON，不输出任何分析、提示或答案。`;
+}
+
+// 阅卷 Prompt (evaluator)
+function getEvaluatorPrompt(sourceText, referenceTranslation, userTranslation) {
+    return `你是一名专业的CATTI二级笔译首席阅卷人，严格遵循《全国翻译专业资格（水平）考试大纲》及官方阅卷流程。
+
+【评卷核心原则】（阅卷人视角）
+## 三大铁律
+1. 忠于原文第一：核心意思绝不能错，错译/漏译是首要扣分项
+2. 完整性优先：译完整比查生词更重要，优先保证全文完整
+3. 少扣分=多得分：CATTI不是翻译比赛，追求"无扣分点"而非文采
+
+## 评分维度与扣分细则（总分100,60分及格）
+
+### 忠实准确（40分）
+- 评分重点：无错译、漏译、擅改原意
+- 典型扣分项：核心词误译、逻辑关系错误、数字/专有名词错误
+- 扣分标准：重大误译扣3-5分/处；一般偏差扣1-2分/处
+
+### 语言表达（30分）
+- 评分重点：语法正确、用词恰当、译文流畅
+- 典型扣分项：时态语态错误、从句/非谓语错误、Chinglish表达
+- 扣分标准：语法错误扣2分/处；句子不通顺扣2分/处
+
+### 术语规范（15分）
+- 评分重点：高频专有名词用官方译法
+- 典型扣分项：人名地名译错、机构名称过度翻译、政治术语不规范
+- 扣分标准：常用专有名词错误扣2分/处；政治核心表述错误扣3分/处
+
+### 格式细节（15分）
+- 评分重点：标点正确、数字规范、卷面整洁
+- 典型扣分项：单复数漏用、标点混用、数字格式不当
+- 扣分标准：拼写/标点错误累计3处扣1分；数字格式错误扣1分/处
+
+## 关键扣分雷区（高频失分点）
+1. 单复数/冠词漏用：people应译为the people或all our people
+2. 逻辑关系误判：并列/因果/转折关系翻译错误
+3. 固定搭配错误：not long before不等于not long ago
+4. 数字翻译规范：统计数字必须用阿拉伯数字；倍数增加应译"增加到3倍"而非"增加3倍"
+5. 人名地名：常用专有名词必须查准译法，不可照搬英文
+6. 标点符号：中文引号用"",英文引号用""
+
+## 阅卷工作流程（模拟官方三阶段）
+### 第一阶段：预评校准
+- 快速浏览全文，判断译文完成度与整体质量
+- 标记疑似重大误译/漏译位置，作为重点核査项
+
+### 第二阶段：试评打分（双评机制模拟）
+- 重点核查项：核心意思是否准确传达、高频专有名词是否规范、数字标点格式是否符合出版标准、是否存在系统性语法错误
+
+### 第三阶段：正评打分（双评机制模拟）
+- 真正生成成绩的环节，CATTI阅卷采用双评机制，每道题会有两名专家进行评阅，通过差异控制机制产生最终成绩。质检组的专家会通过网评系统实时进行监控，控制阅卷质量。
+
+## 你的任务
+请严格使用中文对考生译文进行评分，聚焦"无扣分点"而非追求完美。
+
+【原文】
+${sourceText}
+
+【参考译文】
+${referenceTranslation}
+
+【考生译文】
+${userTranslation}
+
+【评分要求】
+1. 根据扣分细则逐项检查考生译文
+2. 计算各维度扣分，得出最终得分（满分100，及格60）
+3. 在comments中说明主要得分点和扣分点
+4. 在grammar_mistakes中列出具体的语法/用词错误
+5. 在suggestions中给出针对性改进建议
+
+【输出格式】
+请以严格JSON格式返回评分结果，不含任何其他内容：
+{
+    "score": 0-100,
+    "comments": "100字左右的总体评价，说明主要扣分点",
+    "accuracy_score": 0-40,
+    "completeness_score": 0-20,
+    "fluency_score": 0-30,
+    "grammar_score": 0-25,
+    "vocabulary_score": 0-15,
+    "grammar_mistakes": ["错误1", "错误2"],
+    "suggestions": ["改进建议1", "改进建议2"]
+}`;
+}
+
 // ==================== 服务商相关函数 ====================
 
 function getProvider() {
@@ -606,13 +737,22 @@ async function generateQuestion(topic) {
     if (!apiKey) { sourceTextEl.innerHTML = '<p class="error-message">错误: 请先配置阿里云 API Key</p><p class="hint">点击左上角配置按钮填写 API Key</p>'; showConfigModal(); return; }
     generatingIndicator.style.display = 'flex';
     try {
-        const prompt = '你是一名专业的 CATTI 二级笔译考试命题专家。请为 "' + topic + '" 类主题生成一道中译英翻译题。要求：1. 难度适中 2. 原文 50-80 字 3. 提供参考译文。请以 JSON 格式返回：{"topic":"主题","source_text":"中文原文","reference_translation":"英文译文","difficulty":"难度","keywords":["关键词"]}';
-        const messages = [{ role: 'system', content: '你是一个专业的翻译考试命题专家。请严格按照要求返回 JSON 格式。' }, { role: 'user', content: prompt }];
+        // 使用出题 Prompt (generator)
+        const prompt = getGeneratorPrompt(topic, '进阶');
+        const messages = [{ role: 'system', content: '你是一名专业的CATTI二级笔译官方命题专家。请严格按照要求生成高质量模拟试题。' }, { role: 'user', content: prompt }];
         const response = await callAPI(messages, 0.7);
         let question;
         const jsonMatch = response.match(/\{[\s\S]*\}/);
         if (jsonMatch) question = JSON.parse(jsonMatch[0]); else throw new Error('无法解析 AI 返回的题目格式');
-        currentQuestion = { topic: question.topic || '通用', source_text: question.source_text || response, reference_translation: question.reference_translation || '参考译文待生成', difficulty: question.difficulty || '中等', keywords: question.keywords || ['通用'] };
+        currentQuestion = {
+            topic: question.topic || topic,
+            source_text: question.source_text || response,
+            reference_translation: question.reference_translation || '参考译文待生成',
+            difficulty: question.difficulty || '进阶',
+            core_points: question.core_points || question.keywords || ['通用考点'],
+            source_type: question.source_type || '原创',
+            word_count: question.word_count || 0
+        };
         sourceTextEl.innerHTML = '<p>' + escapeHtml(currentQuestion.source_text) + '</p>';
         document.getElementById('practice-topic').value = currentQuestion.topic;
         document.getElementById('source-lang').textContent = '中文';
@@ -650,8 +790,9 @@ async function submitForGrading() {
     const generatingIndicator = document.getElementById('generating-indicator');
     generatingIndicator.style.display = 'flex';
     try {
-        const prompt = '【原文】' + currentQuestion.source_text + '\n\n【参考译文】' + currentQuestion.reference_translation + '\n\n【考生译文】' + userText + '\n\n请从准确性、完整性、流畅度、语法、词汇五个维度评分，并以 JSON 格式返回：{"score":0-100,"comments":"总体评价","accuracy_score":0-25,"completeness_score":0-25,"fluency_score":0-25,"grammar_score":0-25,"vocabulary_score":0-25,"grammar_mistakes":[],"suggestions":[]}';
-        const messages = [{ role: 'system', content: '你是一个专业的翻译考试阅卷专家。请严格按照要求返回 JSON 格式。' }, { role: 'user', content: prompt }];
+        // 使用阅卷 Prompt (evaluator)
+        const prompt = getEvaluatorPrompt(currentQuestion.source_text, currentQuestion.reference_translation, userText);
+        const messages = [{ role: 'system', content: '你是一名专业的CATTI二级笔译阅卷专家。请严格按照 CATTI 二级评分标准进行评分。' }, { role: 'user', content: prompt }];
         const response = await callAPI(messages, 0.5);
         let grading;
         const jsonMatch = response.match(/\{[\s\S]*\}/);
