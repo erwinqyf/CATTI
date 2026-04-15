@@ -90,7 +90,13 @@
                     <div class="progress-bar">
                         <div class="progress-fill" id="practice-progress"></div>
                     </div>
-                    <div class="progress-text" id="practice-text">1/1</div>
+                    <div class="progress-text" id="practice-text">1/4</div>
+                </div>
+                <div class="language-select">
+                    <select id="language-pair" class="select-input" onchange="changeLanguagePair()">
+                        <option value="zh-en">中译英</option>
+                        <option value="en-zh">英译中</option>
+                    </select>
                 </div>
                 <div class="topic-select">
                     <select id="practice-topic" onchange="changePracticeTopic()">
@@ -98,12 +104,6 @@
                         <option value="社会类">社会类</option>
                         <option value="科技类">科技类</option>
                         <option value="文化类">文化类</option>
-                    </select>
-                </div>
-                <div class="language-select">
-                    <select id="language-pair" onchange="changeLanguagePair()">
-                        <option value="zh-en">中译英 (Chinese to English)</option>
-                        <option value="en-zh">英译中 (English to Chinese)</option>
                     </select>
                 </div>
             </div>
@@ -114,58 +114,208 @@
                 <span>AI 正在为您生成...</span>
             </div>
 
-            <div class="translation-container">
-                <!-- 左侧：原文 -->
-                <div class="source-panel">
-                    <div class="panel-header">
-                        <span class="panel-title">原文</span>
-                        <span class="panel-lang" id="source-lang">中文</span>
+            <div class="practice-container">
+                <!-- 语言对1: 中译英 -->
+                <div class="language-pair-section">
+                    <div class="pair-header">
+                        <h3><span class="pair-number">1</span> 语言对：中译英</h3>
                     </div>
-                    <div class="source-content" id="source-text">
-                        <div class="placeholder-text">点击下方"生成题目"按钮，AI 将为您生成题目</div>
+
+                    <!-- 第1篇文章 -->
+                    <div class="question-block">
+                        <div class="question-title">第1篇</div>
+                        <div class="translation-container">
+                            <div class="source-panel">
+                                <div class="panel-header">
+                                    <span class="panel-title">原文</span>
+                                    <span class="panel-lang">中文</span>
+                                </div>
+                                <div class="source-content" id="source-text-1">
+                                    <div class="placeholder-text">点击"生成第1篇"按钮</div>
+                                </div>
+                            </div>
+                            <div class="target-panel">
+                                <div class="panel-header">
+                                    <span class="panel-title">译文</span>
+                                    <div class="action-buttons">
+                                        <button class="action-btn" onclick="clearTranslation(1)" title="清空译文">
+                                            <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M3 6H5H21M19 6V20C19 21 18 22 17 22H7C6 22 5 21 5 20V6M8 6V4C8 3 9 2 10 2H14C15 2 16 3 16 4V6M10 10L14 14M14 10L10 14"/></svg>
+                                        </button>
+                                        <button class="action-btn" onclick="copySource(1)" title="复制原文">
+                                            <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><rect x="9" y="9" width="13" height="13" rx="2" ry="2"></rect><path d="M5 15H4C3 15 3 14 3 13V4C3 3 4 2 5 2H16C17 2 18 3 18 4V5"></path></svg>
+                                        </button>
+                                    </div>
+                                </div>
+                                <textarea class="target-input" id="target-text-1" placeholder="在此输入译文..."></textarea>
+                                <div class="target-footer">
+                                    <span class="word-count" id="word-count-1">0 字</span>
+                                </div>
+                            </div>
+                        </div>
+                        <div class="question-actions">
+                            <button class="btn btn-primary" onclick="generateQuestion(1)">生成第1篇</button>
+                            <button class="btn btn-primary" id="submit-btn-1" style="display:none" onclick="submitForGrading(1)">提交批改</button>
+                        </div>
+                        <div class="grading-result" id="grading-result-1">
+                            <div class="grading-content" id="grading-content-1">
+                                <div class="placeholder-text">提交后显示批改结果</div>
+                            </div>
+                            <div class="grade-score" id="grade-score-1">--</div>
+                        </div>
+                    </div>
+
+                    <!-- 第2篇文章 -->
+                    <div class="question-block">
+                        <div class="question-title">第2篇</div>
+                        <div class="translation-container">
+                            <div class="source-panel">
+                                <div class="panel-header">
+                                    <span class="panel-title">原文</span>
+                                    <span class="panel-lang">中文</span>
+                                </div>
+                                <div class="source-content" id="source-text-2">
+                                    <div class="placeholder-text">点击"生成第2篇"按钮</div>
+                                </div>
+                            </div>
+                            <div class="target-panel">
+                                <div class="panel-header">
+                                    <span class="panel-title">译文</span>
+                                    <div class="action-buttons">
+                                        <button class="action-btn" onclick="clearTranslation(2)" title="清空译文">
+                                            <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M3 6H5H21M19 6V20C19 21 18 22 17 22H7C6 22 5 21 5 20V6M8 6V4C8 3 9 2 10 2H14C15 2 16 3 16 4V6M10 10L14 14M14 10L10 14"/></svg>
+                                        </button>
+                                        <button class="action-btn" onclick="copySource(2)" title="复制原文">
+                                            <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><rect x="9" y="9" width="13" height="13" rx="2" ry="2"></rect><path d="M5 15H4C3 15 3 14 3 13V4C3 3 4 2 5 2H16C17 2 18 3 18 4V5"></path></svg>
+                                        </button>
+                                    </div>
+                                </div>
+                                <textarea class="target-input" id="target-text-2" placeholder="在此输入译文..."></textarea>
+                                <div class="target-footer">
+                                    <span class="word-count" id="word-count-2">0 字</span>
+                                </div>
+                            </div>
+                        </div>
+                        <div class="question-actions">
+                            <button class="btn btn-primary" onclick="generateQuestion(2)">生成第2篇</button>
+                            <button class="btn btn-primary" id="submit-btn-2" style="display:none" onclick="submitForGrading(2)">提交批改</button>
+                        </div>
+                        <div class="grading-result" id="grading-result-2">
+                            <div class="grading-content" id="grading-content-2">
+                                <div class="placeholder-text">提交后显示批改结果</div>
+                            </div>
+                            <div class="grade-score" id="grade-score-2">--</div>
+                        </div>
                     </div>
                 </div>
 
-                <!-- 右侧：译文输入 -->
-                <div class="target-panel">
-                    <div class="panel-header">
-                        <span class="panel-title">译文</span>
-                        <div class="action-buttons">
-                            <button class="action-btn" onclick="clearTranslation()" title="清空译文">
-                                <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
-                                    <path d="M3 6H5H21M19 6V20C19 21 18 22 17 22H7C6 22 5 21 5 20V6M8 6V4C8 3 9 2 10 2H14C15 2 16 3 16 4V6M10 10L14 14M14 10L10 14"/>
-                                </svg>
-                            </button>
-                            <button class="action-btn" onclick="copySource()" title="复制原文">
-                                <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
-                                    <rect x="9" y="9" width="13" height="13" rx="2" ry="2"></rect>
-                                    <path d="M5 15H4C3 15 3 14 3 13V4C3 3 4 2 5 2H16C17 2 18 3 18 4V5"></path>
-                                </svg>
-                            </button>
+                <!-- 语言对2: 英译中 -->
+                <div class="language-pair-section">
+                    <div class="pair-header">
+                        <h3><span class="pair-number">2</span> 语言对：英译中</h3>
+                    </div>
+
+                    <!-- 第3篇文章 -->
+                    <div class="question-block">
+                        <div class="question-title">第3篇</div>
+                        <div class="translation-container">
+                            <div class="source-panel">
+                                <div class="panel-header">
+                                    <span class="panel-title">原文</span>
+                                    <span class="panel-lang">English</span>
+                                </div>
+                                <div class="source-content" id="source-text-3">
+                                    <div class="placeholder-text">点击"生成第3篇"按钮</div>
+                                </div>
+                            </div>
+                            <div class="target-panel">
+                                <div class="panel-header">
+                                    <span class="panel-title">译文</span>
+                                    <div class="action-buttons">
+                                        <button class="action-btn" onclick="clearTranslation(3)" title="清空译文">
+                                            <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M3 6H5H21M19 6V20C19 21 18 22 17 22H7C6 22 5 21 5 20V6M8 6V4C8 3 9 2 10 2H14C15 2 16 3 16 4V6M10 10L14 14M14 10L10 14"/></svg>
+                                        </button>
+                                        <button class="action-btn" onclick="copySource(3)" title="复制原文">
+                                            <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><rect x="9" y="9" width="13" height="13" rx="2" ry="2"></rect><path d="M5 15H4C3 15 3 14 3 13V4C3 3 4 2 5 2H16C17 2 18 3 18 4V5"></path></svg>
+                                        </button>
+                                    </div>
+                                </div>
+                                <textarea class="target-input" id="target-text-3" placeholder="在此输入译文..."></textarea>
+                                <div class="target-footer">
+                                    <span class="word-count" id="word-count-3">0 字</span>
+                                </div>
+                            </div>
+                        </div>
+                        <div class="question-actions">
+                            <button class="btn btn-primary" onclick="generateQuestion(3)">生成第3篇</button>
+                            <button class="btn btn-primary" id="submit-btn-3" style="display:none" onclick="submitForGrading(3)">提交批改</button>
+                        </div>
+                        <div class="grading-result" id="grading-result-3">
+                            <div class="grading-content" id="grading-content-3">
+                                <div class="placeholder-text">提交后显示批改结果</div>
+                            </div>
+                            <div class="grade-score" id="grade-score-3">--</div>
                         </div>
                     </div>
-                    <textarea class="target-input" id="target-text" placeholder="在此输入译文..."></textarea>
-                    <div class="target-footer">
-                        <span class="word-count" id="word-count">0 字</span>
-                        <div class="timer" id="timer">00:00</div>
+
+                    <!-- 第4篇文章 -->
+                    <div class="question-block">
+                        <div class="question-title">第4篇</div>
+                        <div class="translation-container">
+                            <div class="source-panel">
+                                <div class="panel-header">
+                                    <span class="panel-title">原文</span>
+                                    <span class="panel-lang">English</span>
+                                </div>
+                                <div class="source-content" id="source-text-4">
+                                    <div class="placeholder-text">点击"生成第4篇"按钮</div>
+                                </div>
+                            </div>
+                            <div class="target-panel">
+                                <div class="panel-header">
+                                    <span class="panel-title">译文</span>
+                                    <div class="action-buttons">
+                                        <button class="action-btn" onclick="clearTranslation(4)" title="清空译文">
+                                            <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M3 6H5H21M19 6V20C19 21 18 22 17 22H7C6 22 5 21 5 20V6M8 6V4C8 3 9 2 10 2H14C15 2 16 3 16 4V6M10 10L14 14M14 10L10 14"/></svg>
+                                        </button>
+                                        <button class="action-btn" onclick="copySource(4)" title="复制原文">
+                                            <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><rect x="9" y="9" width="13" height="13" rx="2" ry="2"></rect><path d="M5 15H4C3 15 3 14 3 13V4C3 3 4 2 5 2H16C17 2 18 3 18 4V5"></path></svg>
+                                        </button>
+                                    </div>
+                                </div>
+                                <textarea class="target-input" id="target-text-4" placeholder="在此输入译文..."></textarea>
+                                <div class="target-footer">
+                                    <span class="word-count" id="word-count-4">0 字</span>
+                                </div>
+                            </div>
+                        </div>
+                        <div class="question-actions">
+                            <button class="btn btn-primary" onclick="generateQuestion(4)">生成第4篇</button>
+                            <button class="btn btn-primary" id="submit-btn-4" style="display:none" onclick="submitForGrading(4)">提交批改</button>
+                        </div>
+                        <div class="grading-result" id="grading-result-4">
+                            <div class="grading-content" id="grading-content-4">
+                                <div class="placeholder-text">提交后显示批改结果</div>
+                            </div>
+                            <div class="grade-score" id="grade-score-4">--</div>
+                        </div>
                     </div>
                 </div>
             </div>
 
             <div class="practice-actions">
-                <button class="btn btn-primary" onclick="generateQuestionFromTopic()">生成题目</button>
-                <button class="btn btn-primary" id="submit-btn" style="display:none" onclick="submitForGrading()">提交批改</button>
-                <button class="btn btn-outline" onclick="generateNextQuestion()">换一题</button>
+                <button class="btn btn-primary" onclick="generateAllQuestions()">生成全部4篇</button>
+                <button class="btn btn-outline" onclick="calculateTotalScore()">查看总分</button>
             </div>
 
             <!-- AI 批改结果 -->
-            <div class="grading-result" id="grading-result">
+            <div class="grading-result" id="grading-total-result">
                 <div class="panel-header">
-                    <span class="panel-title">AI 批改结果</span>
-                    <span class="grade-score" id="grade-score">--</span>
+                    <span class="panel-title">总分统计</span>
+                    <span class="grade-score" id="grade-total-score">--</span>
+                    <span class="grade-total" id="grade-total-total">/100</span>
                 </div>
-                <div class="grading-content" id="grading-content">
-                    <div class="placeholder-text">提交译文后，AI 将为您批改并给出评分与建议</div>
+                <div class="grading-content" id="grading-total-content">
+                    <div class="placeholder-text">完成全部批改后可查看总分和平均分</div>
                 </div>
             </div>
         </section>

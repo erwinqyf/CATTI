@@ -3,7 +3,7 @@ CATTI 二笔练习网站（个人用）
 
 # 260414 update
 - depart prompts for generation and evaluation（context length）
-- add practise track feature
+- add trackable function on tested practise
 - add language pair selection button
 - Next plan: split source frame into 2 parts to better fit CATTI requirement
 
