@@ -795,6 +795,11 @@ function getEvaluatorPrompt(sourceText, referenceTranslation, userTranslation, l
     const refLang = isZhEn ? '参考译文' : 'Reference Translation';
     const userLang = isZhEn ? '考生译文' : 'User Translation';
 
+    // 根据语言对调整评分维度描述
+    const scoringNote = isZhEn
+        ? '【评分维度】\n- 忠实准确：40分（译文是否准确传达原文意思）\n- 语言表达：30分（译文是否流畅自然）\n- 术语规范：15分（专有名词翻译是否准确）\n- 格式细节：15分（标点、数字等细节是否规范）\n\n总分100分，60分及格'
+        : '【Scoring Dimensions】\n- Accuracy: 40 points (whether the translation accurately conveys the original meaning)\n- Language Expression: 30 points (whether the translation is fluent and natural)\n- Terminology: 15 points (whether proper nouns are translated accurately)\n- Format Details: 15 points (whether details like punctuation and numbers are standardized)\n\nTotal 100 points, 60 points passing';
+
     return `你是一名专业的CATTI二级笔译首席阅卷人，严格遵循《全国翻译专业资格（水平）考试大纲》及官方阅卷流程。
 
 【评卷核心原则】（阅卷人视角）
@@ -845,6 +850,7 @@ function getEvaluatorPrompt(sourceText, referenceTranslation, userTranslation, l
 - 真正生成成绩的环节，CATTI阅卷采用双评机制，每道题会有两名专家进行评阅，通过差异控制机制产生最终成绩。质检组的专家会通过网评系统实时进行监控，控制阅卷质量。
 
 ## 你的任务
+${scoringNote}
 请严格使用中文对考生译文进行评分，聚焦"无扣分点"而非追求完美。还要给出你觉得合适的表达。
 
 【${sourceLang}】
