@@ -1550,6 +1550,14 @@ function displayQuestionGradingResult(questionNum, grading) {
 
 // ==================== 考试模式 ====================
 
+// 考试模式随机主题列表
+const EXAM_TOPICS = ['经济类', '社会类', '科技类', '文化类', '政治外交', '生态环境', '教育类', '医疗健康'];
+
+function getRandomTopic() {
+    const topics = EXAM_TOPICS;
+    return topics[Math.floor(Math.random() * topics.length)];
+}
+
 function resetExamState() {
     for (let i = 1; i <= 4; i++) {
         questionState[i] = { generated: false, graded: false, data: null, result: null, langPair: getQuestionLangPair(i) };
@@ -1557,7 +1565,8 @@ function resetExamState() {
 }
 
 async function generateExamQuestion(questionNum) {
-    const topic = document.getElementById('exam-topic').value || '经济类';
+    // 考试模式使用随机主题
+    const topic = getRandomTopic();
     const generatingIndicator = document.getElementById('exam-generating-indicator');
     const sourceTextEl = document.getElementById(getSourceTextId(questionNum));
     const apiKey = localStorage.getItem('apiKey');
@@ -1655,15 +1664,8 @@ async function generateAllExamQuestions() {
 }
 
 function changeExamTopic() {
-    const topic = document.getElementById('exam-topic').value;
-    for (let i = 1; i <= 4; i++) {
-        if (!questionState[i].generated) {
-            const sourceTextEl = document.getElementById(getSourceTextId(i));
-            if (sourceTextEl) {
-                sourceTextEl.innerHTML = '<div class="placeholder-text">当前主题：' + topic + '，点击下方"生成第' + i + '篇"按钮，AI 将为您生成题目</div>';
-            }
-        }
-    }
+    // 考试模式使用随机主题，不需要处理这个函数
+    return;
 }
 
 // ==================== 计算总分 ====================
