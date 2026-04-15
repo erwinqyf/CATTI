@@ -725,12 +725,20 @@ const API_PROVIDERS = {
 // ==================== Prompt 函数 ====================
 
 // 出题 Prompt (generator)
-function getGeneratorPrompt(topic, difficulty = '进阶', langPair = 'zh-en') {
+function getGeneratorPrompt(topic, difficulty = '进阶', langPair = 'zh-en', questionType = 'single') {
     const isZhEn = langPair === 'zh-en';
     const sourceLang = isZhEn ? '中文' : '英文';
     const targetLang = isZhEn ? '英文' : '中文';
     const taskDesc = isZhEn ? '生成一道中译英翻译题' : '生成一道英译中翻译题';
-    const sourceCount = isZhEn ? '550-700英文词' : '500-650中文字符';
+    // 根据题目类型和语言对调整词数
+    // 练习模式：单篇文章，英译中 ~450词，汉译英 ~300字
+    // 考试模式：两篇文章合计，英译中 ~900词，汉译英 ~600字
+    let sourceCount;
+    if (questionType === 'exam') {
+        sourceCount = isZhEn ? '两篇文章合计约600中文字符（每篇约300字）' : '两篇文章合计约900英文词（每篇约450词）';
+    } else {
+        sourceCount = isZhEn ? '约300中文字符' : '约450英文词';
+    }
     const sourceDesc = isZhEn ? '"中文原文（完整段落）"' : '"英文原文（完整段落）"';
     const refDesc = isZhEn ? '"英文参考译文（完整段落）"' : '"中文参考译文（完整段落）"';
 
@@ -1296,7 +1304,9 @@ async function generateQuestion(questionNum) {
 
     try {
         const langPair = getQuestionLangPair(questionNum);
-        const prompt = getGeneratorPrompt(topic, '进阶', langPair);
+        // 练习模式使用 'single'
+        const questionType = 'single';
+        const prompt = getGeneratorPrompt(topic, '进阶', langPair, questionType);
         const messages = [
             { role: 'system', content: '你是一名专业的CATTI二级笔译官方命题专家。请严格按照要求生成高质量模拟试题。' },
             { role: 'user', content: prompt }
@@ -1563,7 +1573,9 @@ async function generateExamQuestion(questionNum) {
 
     try {
         const langPair = getQuestionLangPair(questionNum);
-        const prompt = getGeneratorPrompt(topic, '进阶', langPair);
+        // 考试模式使用 'exam'
+        const questionType = 'exam';
+        const prompt = getGeneratorPrompt(topic, '进阶', langPair, questionType);
         const messages = [
             { role: 'system', content: '你是一名专业的CATTI二级笔译官方命题专家。请严格按照要求生成高质量模拟试题。' },
             { role: 'user', content: prompt }
