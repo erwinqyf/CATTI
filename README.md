@@ -1,10 +1,15 @@
 CATTI 二笔练习网站（个人用）
 
+# 260415 Update
+- added exam mode
+- added more topics
+- splited source frame into 2 parts and optimized prompt to better fit CATTI requirements
+- Next plan: use it and prep
 
 # 260414 update
-- depart prompts for generation and evaluation（context length）
-- add trackable function on tested practise
-- add language pair selection button
+- departed prompts for generation and evaluation（context length）
+- added trackable function on tested practise
+- added language pair selection button
 - Next plan: split source frame into 2 parts to better fit CATTI requirement
 
 # 260413 initial update

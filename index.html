@@ -123,7 +123,7 @@
                 <!-- 语言对1: 中译英 (问题1和2) -->
                 <div class="language-pair-section" id="zh-en-section">
                     <div class="pair-header">
-                        <h3><span class="pair-number">1</span> 语言对：中译英</h3>
+                        <h3>语言对：中译英</h3>
                     </div>
 
                     <!-- 第1篇文章 -->
@@ -216,12 +216,12 @@
                 <!-- 语言对2: 英译中 (问题3和4) - 默认隐藏 -->
                 <div class="language-pair-section" id="en-zh-section" style="display: none;">
                     <div class="pair-header">
-                        <h3><span class="pair-number">2</span> 语言对：英译中</h3>
+                        <h3>语言对：英译中</h3>
                     </div>
 
-                    <!-- 第3篇文章 -->
+                    <!-- 第1篇文章 -->
                     <div class="question-block">
-                        <div class="question-title">第3篇</div>
+                        <div class="question-title">第1篇</div>
                         <div class="translation-container">
                             <div class="source-panel">
                                 <div class="panel-header">
@@ -229,7 +229,7 @@
                                     <span class="panel-lang">English</span>
                                 </div>
                                 <div class="source-content" id="source-text-3">
-                                    <div class="placeholder-text">点击"生成第3篇"按钮</div>
+                                    <div class="placeholder-text">点击"生成第1篇"按钮</div>
                                 </div>
                             </div>
                             <div class="target-panel">
@@ -251,7 +251,7 @@
                             </div>
                         </div>
                         <div class="question-actions">
-                            <button class="btn btn-primary" onclick="generateQuestion(3)">生成第3篇</button>
+                            <button class="btn btn-primary" onclick="generateQuestion(3)">生成第1篇</button>
                             <button class="btn btn-primary" id="submit-btn-3" style="display:none" onclick="submitForGrading(3)">提交批改</button>
                         </div>
                         <div class="grading-result" id="grading-result-3">
@@ -262,9 +262,9 @@
                         </div>
                     </div>
 
-                    <!-- 第4篇文章 -->
+                    <!-- 第2篇文章 -->
                     <div class="question-block">
-                        <div class="question-title">第4篇</div>
+                        <div class="question-title">第2篇</div>
                         <div class="translation-container">
                             <div class="source-panel">
                                 <div class="panel-header">
@@ -272,7 +272,7 @@
                                     <span class="panel-lang">English</span>
                                 </div>
                                 <div class="source-content" id="source-text-4">
-                                    <div class="placeholder-text">点击"生成第4篇"按钮</div>
+                                    <div class="placeholder-text">点击"生成第2篇"按钮</div>
                                 </div>
                             </div>
                             <div class="target-panel">
@@ -294,7 +294,7 @@
                             </div>
                         </div>
                         <div class="question-actions">
-                            <button class="btn btn-primary" onclick="generateQuestion(4)">生成第4篇</button>
+                            <button class="btn btn-primary" onclick="generateQuestion(4)">生成第2篇</button>
                             <button class="btn btn-primary" id="submit-btn-4" style="display:none" onclick="submitForGrading(4)">提交批改</button>
                         </div>
                         <div class="grading-result" id="grading-result-4">
@@ -327,13 +327,9 @@
                     </div>
                     <div class="progress-text" id="exam-text">0/4</div>
                 </div>
-                <div class="topic-select">
-                    <select id="exam-topic" onchange="changeExamTopic()">
-                        <option value="经济类">经济类</option>
-                        <option value="社会类">社会类</option>
-                        <option value="科技类">科技类</option>
-                        <option value="文化类">文化类</option>
-                    </select>
+                <div class="exam-topics-feedback">
+                    <span class="topics-label">题目来源主题：</span>
+                    <span class="topic-list">经济类 · 社会类 · 科技类 · 文化类 · 政治外交 · 生态环境 · 教育类 · 医疗健康</span>
                 </div>
                 <button class="btn btn-primary" onclick="generateAllExamQuestions()" style="padding: 10px 24px;">生成全部4篇</button>
             </div>
@@ -637,7 +633,7 @@
         </div>
 
         <!-- 批改历史详情模态框 -->
-        <div id="grading-detail-modal" class="modal">
+        <div id="grading-detail-modal" class="modal" onclick="if(event.target === this) closeGradingDetail();">
             <div class="modal-content modal-large">
                 <div class="modal-header">
                     <h3>批改详情</h3>
@@ -1671,11 +1667,6 @@ async function generateAllExamQuestions() {
     } finally {
         generatingIndicator.style.display = 'none';
     }
-}
-
-function changeExamTopic() {
-    // 考试模式使用随机主题，不需要处理这个函数
-    return;
 }
 
 // ==================== 计算总分 ====================
