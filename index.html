@@ -15,13 +15,14 @@
                 <button class="config-btn" onclick="showConfigModal()">
                     <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
                         <circle cx="12" cy="12" r="3"></circle>
-                        <path d="M19.4 15a1.65 1.65 0 0 0 .33 1.82l.06.06a2 2 0 0 1 0 2.83 2 2 0 0 1-2.83 0l-.06-.06a1.65 1.65 0 0 0-1.82-.33 1.65 1.65 0 0 0-1 1.51V21a2 2 0 0 1-2 2 2 2 0 0 1-2-2v-.09A1.65 1.65 0 0 0 9 19.4a1.65 1.65 0 0 0-1.82.33l-.06.06a2 2 0 0 1-2.83 0 2 2 0 0 1 0-2.83l.06-.06a1.65 1.65 0 0 0 .33-1.82 1.65 1.65 0 0 0-1.51-1H3a2 2 0 0 1-2-2 2 2 0 0 1 2-2h.09A1.65 1.65 0 0 0 4.6 9a1.65 1.65 0 0 0-.33-1.82l-.06-.06a2 2 0 0 1 0-2.83 2 2 0 0 1 2.83 0l.06.06a1.65 1.65 0 0 0 1.82.33H9a1.65 1.65 0 0 0 1-1.51V3a2 2 0 0 1 2-2 2 2 0 0 1 2 2v.09a1.65 1.65 0 0 0 1 1.51 1.65 1.65 0 0 0 1.82-.33l.06-.06a2 2 0 0 1 2.83 0 2 2 0 0 1 0 2.83l-.06.06a1.65 1.65 0 0 0-.33 1.82V9a1.65 1.65 0 0 0 1.51 1H21a2 2 0 0 1 2 2 2 2 0 0 1-2 2h-.09a1.65 1.65 0 0 0-1.51 1z"></path>
+                        <path d="M19.4 15a1.65 1.65 0 0 0 .33 1.82l.06.06a2 2 0 0 1 0 2.83 2 2 0 0 1-2.83 0l-.06-.06a1.65 1.65 0 0 0-1.82-.33 1.65 1.65 0 0 0-1 1.51V21a2 2 0 0 1-2 2 2 2 0 0 1-2-2v-.09A1.65 1.65 0 0 0 9 19.4a1.65 1.65 0 0 0-1.82.33l-.06.06a2 2 0 0 1-2.83 0 2 2 0 0 1 0-2.83l.06-.06a1.65 1.65 0 0 0 .33-1.82 1.65 1.65 0 0 0-1.51-1H3a2 2 0 0 1-2-2 2 2 0 0 1 2-2h.09A1.65 1.65 0 0 0 4.6 9a1.65 1.65 0 0 0-.33-1.82l-.06-.06a2 2 0 0 1 0-2.83 2 2 0 0 1 2.83 0l.06.06a1.65 1.65 0 0 0 1.82.33H9a1.65 1.65 0 0 0 1-1.51V3a2 2 0 0 1 2-2 2 2 0 0 1 2 2v.09a1.65 1.65 0 0 0 1 1.51 1.65 1.65 0 0 0 1.82-.33l.06-.06a2 2 0 0 1 2.83 0 2 2 0 0 1 0 2.83l-.06-.06a1.65 1.65 0 0 0-.33 1.82V9a1.65 1.65 0 0 0 1.51 1H21a2 2 0 0 1 2 2 2 2 0 0 1-2 2h-.09a1.65 1.65 0 0 0-1.51 1z"></path>
                     </svg>
                 </button>
             </div>
             <nav class="nav">
                 <button class="nav-btn active" onclick="showTab('home')">首页</button>
-                <button class="nav-btn" onclick="showTab('practice')">练习模式</button>
+                <button class="nav-btn" onclick="goToPractice('practice')">练习模式</button>
+                <button class="nav-btn" onclick="goToPractice('exam')">考试模式</button>
                 <button class="nav-btn" onclick="showTab('grading')">批改中心</button>
             </nav>
         </header>
@@ -32,7 +33,7 @@
                 <h2 class="hero-title">CATTI 二级笔译 AI 辅导</h2>
                 <p class="hero-subtitle">AI 出题 + 实战练习 + 智能批改</p>
                 <div class="hero-buttons">
-                    <button class="btn btn-primary" onclick="goToPractice()">开始练习</button>
+                    <button class="btn btn-primary" onclick="goToPractice('practice')">开始练习</button>
                 </div>
             </div>
 
@@ -90,7 +91,7 @@
                     <div class="progress-bar">
                         <div class="progress-fill" id="practice-progress"></div>
                     </div>
-                    <div class="progress-text" id="practice-text">1/4</div>
+                    <div class="progress-text" id="practice-text">1/2</div>
                 </div>
                 <div class="language-select">
                     <select id="language-pair" class="select-input" onchange="changeLanguagePair()">
@@ -114,9 +115,9 @@
                 <span>AI 正在为您生成...</span>
             </div>
 
-            <div class="practice-container">
-                <!-- 语言对1: 中译英 -->
-                <div class="language-pair-section">
+            <div class="practice-container" id="practice-container">
+                <!-- 语言对1: 中译英 (问题1和2) -->
+                <div class="language-pair-section" id="zh-en-section">
                     <div class="pair-header">
                         <h3><span class="pair-number">1</span> 语言对：中译英</h3>
                     </div>
@@ -146,7 +147,7 @@
                                         </button>
                                     </div>
                                 </div>
-                                <textarea class="target-input" id="target-text-1" placeholder="在此输入译文..."></textarea>
+                                <textarea class="target-input" id="target-text-1" placeholder="在此输入译文..." oninput="updateWordCount(1)"></textarea>
                                 <div class="target-footer">
                                     <span class="word-count" id="word-count-1">0 字</span>
                                 </div>
@@ -189,7 +190,7 @@
                                         </button>
                                     </div>
                                 </div>
-                                <textarea class="target-input" id="target-text-2" placeholder="在此输入译文..."></textarea>
+                                <textarea class="target-input" id="target-text-2" placeholder="在此输入译文..." oninput="updateWordCount(2)"></textarea>
                                 <div class="target-footer">
                                     <span class="word-count" id="word-count-2">0 字</span>
                                 </div>
@@ -208,8 +209,8 @@
                     </div>
                 </div>
 
-                <!-- 语言对2: 英译中 -->
-                <div class="language-pair-section">
+                <!-- 语言对2: 英译中 (问题3和4) - 默认隐藏 -->
+                <div class="language-pair-section" id="en-zh-section" style="display: none;">
                     <div class="pair-header">
                         <h3><span class="pair-number">2</span> 语言对：英译中</h3>
                     </div>
@@ -239,7 +240,7 @@
                                         </button>
                                     </div>
                                 </div>
-                                <textarea class="target-input" id="target-text-3" placeholder="在此输入译文..."></textarea>
+                                <textarea class="target-input" id="target-text-3" placeholder="在此输入译文..." oninput="updateWordCount(3)"></textarea>
                                 <div class="target-footer">
                                     <span class="word-count" id="word-count-3">0 字</span>
                                 </div>
@@ -282,7 +283,7 @@
                                         </button>
                                     </div>
                                 </div>
-                                <textarea class="target-input" id="target-text-4" placeholder="在此输入译文..."></textarea>
+                                <textarea class="target-input" id="target-text-4" placeholder="在此输入译文..." oninput="updateWordCount(4)"></textarea>
                                 <div class="target-footer">
                                     <span class="word-count" id="word-count-4">0 字</span>
                                 </div>
@@ -302,19 +303,243 @@
                 </div>
             </div>
 
+            <!-- 练习模式操作按钮 -->
+            <div class="practice-actions" id="practice-mode-actions">
+                <button class="btn btn-primary" onclick="generateAllQuestions()">生成全部2篇</button>
+            </div>
+        </section>
+
+        <!-- 考试模式 -->
+        <section id="exam" class="section">
+            <div class="practice-header">
+                <button class="back-btn" onclick="showTab('home')">
+                    <svg width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+                        <path d="M19 12H5M12 19l-7-7 7-7"/>
+                    </svg>
+                </button>
+                <div class="progress-container">
+                    <div class="progress-bar">
+                        <div class="progress-fill" id="exam-progress"></div>
+                    </div>
+                    <div class="progress-text" id="exam-text">0/4</div>
+                </div>
+                <div class="topic-select">
+                    <select id="exam-topic" onchange="changeExamTopic()">
+                        <option value="经济类">经济类</option>
+                        <option value="社会类">社会类</option>
+                        <option value="科技类">科技类</option>
+                        <option value="文化类">文化类</option>
+                    </select>
+                </div>
+                <button class="btn btn-primary" onclick="generateAllExamQuestions()" style="padding: 10px 24px;">生成全部4篇</button>
+            </div>
+
+            <!-- AI 生成中提示 -->
+            <div id="exam-generating-indicator" class="generating-indicator" style="display:none;">
+                <div class="spinner"></div>
+                <span>AI 正在为您生成...</span>
+            </div>
+
+            <div class="practice-container">
+                <!-- 语言对1: 中译英 (问题1和2) -->
+                <div class="language-pair-section">
+                    <div class="pair-header">
+                        <h3><span class="pair-number">1</span> 语言对：中译英</h3>
+                    </div>
+
+                    <!-- 第1篇文章 -->
+                    <div class="question-block">
+                        <div class="question-title">第1篇</div>
+                        <div class="translation-container">
+                            <div class="source-panel">
+                                <div class="panel-header">
+                                    <span class="panel-title">原文</span>
+                                    <span class="panel-lang">中文</span>
+                                </div>
+                                <div class="source-content" id="exam-source-text-1">
+                                    <div class="placeholder-text">点击"生成第1篇"按钮</div>
+                                </div>
+                            </div>
+                            <div class="target-panel">
+                                <div class="panel-header">
+                                    <span class="panel-title">译文</span>
+                                    <div class="action-buttons">
+                                        <button class="action-btn" onclick="clearTranslation(1)" title="清空译文">
+                                            <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M3 6H5H21M19 6V20C19 21 18 22 17 22H7C6 22 5 21 5 20V6M8 6V4C8 3 9 2 10 2H14C15 2 16 3 16 4V6M10 10L14 14M14 10L10 14"/></svg>
+                                        </button>
+                                        <button class="action-btn" onclick="copySource(1)" title="复制原文">
+                                            <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><rect x="9" y="9" width="13" height="13" rx="2" ry="2"></rect><path d="M5 15H4C3 15 3 14 3 13V4C3 3 4 2 5 2H16C17 2 18 3 18 4V5"></path></svg>
+                                        </button>
+                                    </div>
+                                </div>
+                                <textarea class="target-input" id="exam-target-text-1" placeholder="在此输入译文..." oninput="updateWordCount(1)"></textarea>
+                                <div class="target-footer">
+                                    <span class="word-count" id="exam-word-count-1">0 字</span>
+                                </div>
+                            </div>
+                        </div>
+                        <div class="question-actions">
+                            <button class="btn btn-primary" onclick="generateExamQuestion(1)">生成第1篇</button>
+                            <button class="btn btn-primary" id="exam-submit-btn-1" style="display:none" onclick="submitForGrading(1)">提交批改</button>
+                        </div>
+                        <div class="grading-result" id="exam-grading-result-1">
+                            <div class="grading-content" id="exam-grading-content-1">
+                                <div class="placeholder-text">提交后显示批改结果</div>
+                            </div>
+                            <div class="grade-score" id="exam-grade-score-1">--</div>
+                        </div>
+                    </div>
+
+                    <!-- 第2篇文章 -->
+                    <div class="question-block">
+                        <div class="question-title">第2篇</div>
+                        <div class="translation-container">
+                            <div class="source-panel">
+                                <div class="panel-header">
+                                    <span class="panel-title">原文</span>
+                                    <span class="panel-lang">中文</span>
+                                </div>
+                                <div class="source-content" id="exam-source-text-2">
+                                    <div class="placeholder-text">点击"生成第2篇"按钮</div>
+                                </div>
+                            </div>
+                            <div class="target-panel">
+                                <div class="panel-header">
+                                    <span class="panel-title">译文</span>
+                                    <div class="action-buttons">
+                                        <button class="action-btn" onclick="clearTranslation(2)" title="清空译文">
+                                            <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M3 6H5H21M19 6V20C19 21 18 22 17 22H7C6 22 5 21 5 20V6M8 6V4C8 3 9 2 10 2H14C15 2 16 3 16 4V6M10 10L14 14M14 10L10 14"/></svg>
+                                        </button>
+                                        <button class="action-btn" onclick="copySource(2)" title="复制原文">
+                                            <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><rect x="9" y="9" width="13" height="13" rx="2" ry="2"></rect><path d="M5 15H4C3 15 3 14 3 13V4C3 3 4 2 5 2H16C17 2 18 3 18 4V5"></path></svg>
+                                        </button>
+                                    </div>
+                                </div>
+                                <textarea class="target-input" id="exam-target-text-2" placeholder="在此输入译文..." oninput="updateWordCount(2)"></textarea>
+                                <div class="target-footer">
+                                    <span class="word-count" id="exam-word-count-2">0 字</span>
+                                </div>
+                            </div>
+                        </div>
+                        <div class="question-actions">
+                            <button class="btn btn-primary" onclick="generateExamQuestion(2)">生成第2篇</button>
+                            <button class="btn btn-primary" id="exam-submit-btn-2" style="display:none" onclick="submitForGrading(2)">提交批改</button>
+                        </div>
+                        <div class="grading-result" id="exam-grading-result-2">
+                            <div class="grading-content" id="exam-grading-content-2">
+                                <div class="placeholder-text">提交后显示批改结果</div>
+                            </div>
+                            <div class="grade-score" id="exam-grade-score-2">--</div>
+                        </div>
+                    </div>
+                </div>
+
+                <!-- 语言对2: 英译中 (问题3和4) -->
+                <div class="language-pair-section">
+                    <div class="pair-header">
+                        <h3><span class="pair-number">2</span> 语言对：英译中</h3>
+                    </div>
+
+                    <!-- 第3篇文章 -->
+                    <div class="question-block">
+                        <div class="question-title">第3篇</div>
+                        <div class="translation-container">
+                            <div class="source-panel">
+                                <div class="panel-header">
+                                    <span class="panel-title">原文</span>
+                                    <span class="panel-lang">English</span>
+                                </div>
+                                <div class="source-content" id="exam-source-text-3">
+                                    <div class="placeholder-text">点击"生成第3篇"按钮</div>
+                                </div>
+                            </div>
+                            <div class="target-panel">
+                                <div class="panel-header">
+                                    <span class="panel-title">译文</span>
+                                    <div class="action-buttons">
+                                        <button class="action-btn" onclick="clearTranslation(3)" title="清空译文">
+                                            <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M3 6H5H21M19 6V20C19 21 18 22 17 22H7C6 22 5 21 5 20V6M8 6V4C8 3 9 2 10 2H14C15 2 16 3 16 4V6M10 10L14 14M14 10L10 14"/></svg>
+                                        </button>
+                                        <button class="action-btn" onclick="copySource(3)" title="复制原文">
+                                            <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><rect x="9" y="9" width="13" height="13" rx="2" ry="2"></rect><path d="M5 15H4C3 15 3 14 3 13V4C3 3 4 2 5 2H16C17 2 18 3 18 4V5"></path></svg>
+                                        </button>
+                                    </div>
+                                </div>
+                                <textarea class="target-input" id="exam-target-text-3" placeholder="在此输入译文..." oninput="updateWordCount(3)"></textarea>
+                                <div class="target-footer">
+                                    <span class="word-count" id="exam-word-count-3">0 字</span>
+                                </div>
+                            </div>
+                        </div>
+                        <div class="question-actions">
+                            <button class="btn btn-primary" onclick="generateExamQuestion(3)">生成第3篇</button>
+                            <button class="btn btn-primary" id="exam-submit-btn-3" style="display:none" onclick="submitForGrading(3)">提交批改</button>
+                        </div>
+                        <div class="grading-result" id="exam-grading-result-3">
+                            <div class="grading-content" id="exam-grading-content-3">
+                                <div class="placeholder-text">提交后显示批改结果</div>
+                            </div>
+                            <div class="grade-score" id="exam-grade-score-3">--</div>
+                        </div>
+                    </div>
+
+                    <!-- 第4篇文章 -->
+                    <div class="question-block">
+                        <div class="question-title">第4篇</div>
+                        <div class="translation-container">
+                            <div class="source-panel">
+                                <div class="panel-header">
+                                    <span class="panel-title">原文</span>
+                                    <span class="panel-lang">English</span>
+                                </div>
+                                <div class="source-content" id="exam-source-text-4">
+                                    <div class="placeholder-text">点击"生成第4篇"按钮</div>
+                                </div>
+                            </div>
+                            <div class="target-panel">
+                                <div class="panel-header">
+                                    <span class="panel-title">译文</span>
+                                    <div class="action-buttons">
+                                        <button class="action-btn" onclick="clearTranslation(4)" title="清空译文">
+                                            <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M3 6H5H21M19 6V20C19 21 18 22 17 22H7C6 22 5 21 5 20V6M8 6V4C8 3 9 2 10 2H14C15 2 16 3 16 4V6M10 10L14 14M14 10L10 14"/></svg>
+                                        </button>
+                                        <button class="action-btn" onclick="copySource(4)" title="复制原文">
+                                            <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><rect x="9" y="9" width="13" height="13" rx="2" ry="2"></rect><path d="M5 15H4C3 15 3 14 3 13V4C3 3 4 2 5 2H16C17 2 18 3 18 4V5"></path></svg>
+                                        </button>
+                                    </div>
+                                </div>
+                                <textarea class="target-input" id="exam-target-text-4" placeholder="在此输入译文..." oninput="updateWordCount(4)"></textarea>
+                                <div class="target-footer">
+                                    <span class="word-count" id="exam-word-count-4">0 字</span>
+                                </div>
+                            </div>
+                        </div>
+                        <div class="question-actions">
+                            <button class="btn btn-primary" onclick="generateExamQuestion(4)">生成第4篇</button>
+                            <button class="btn btn-primary" id="exam-submit-btn-4" style="display:none" onclick="submitForGrading(4)">提交批改</button>
+                        </div>
+                        <div class="grading-result" id="exam-grading-result-4">
+                            <div class="grading-content" id="exam-grading-content-4">
+                                <div class="placeholder-text">提交后显示批改结果</div>
+                            </div>
+                            <div class="grade-score" id="exam-grade-score-4">--</div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+
             <div class="practice-actions">
-                <button class="btn btn-primary" onclick="generateAllQuestions()">生成全部4篇</button>
-                <button class="btn btn-outline" onclick="calculateTotalScore()">查看总分</button>
+                <button class="btn btn-primary" onclick="calculateTotalScore()">查看总分</button>
             </div>
 
             <!-- AI 批改结果 -->
-            <div class="grading-result" id="grading-total-result">
+            <div class="grading-result" id="exam-total-result">
                 <div class="panel-header">
                     <span class="panel-title">总分统计</span>
-                    <span class="grade-score" id="grade-total-score">--</span>
-                    <span class="grade-total" id="grade-total-total">/100</span>
+                    <span class="grade-score" id="exam-total-score">--</span>
+                    <span class="grade-total">/100</span>
                 </div>
-                <div class="grading-content" id="grading-total-content">
+                <div class="grading-content" id="exam-total-content">
                     <div class="placeholder-text">完成全部批改后可查看总分和平均分</div>
                 </div>
             </div>
@@ -433,7 +658,16 @@
 let currentQuestion = null;
 let practiceTimer = null;
 let practiceElapsedTime = 0;
-let pendingTopic = null; // 存储待生成的题目主题
+let pendingTopic = null;
+let currentMode = 'practice'; // 'practice' or 'exam'
+
+// 4个题目的状态
+let questionState = {
+    1: { generated: false, graded: false, data: null, result: null, langPair: 'zh-en' },
+    2: { generated: false, graded: false, data: null, result: null, langPair: 'zh-en' },
+    3: { generated: false, graded: false, data: null, result: null, langPair: 'en-zh' },
+    4: { generated: false, graded: false, data: null, result: null, langPair: 'en-zh' }
+};
 
 // 多服务商配置
 const API_PROVIDERS = {
@@ -519,7 +753,7 @@ function getGeneratorPrompt(topic, difficulty = '进阶', langPair = 'zh-en') {
 
 【命题原则】
 - 文本真实可译，无生僻超纲词，不设置"陷阱式"歧义
-- 每篇明确标注2–3个**核心考查点**（如：被动语态转换、四字格处理、长句切分、术语一致性）
+- 每篇明确标注2-3个**核心考查点**（如：被动语态转换、四字格处理、长句切分、术语一致性）
 - 保留原文标点、段落、数字格式，模拟真实考场排版
 - 政治/政策类表述必须与国务院/外交部/《中国关键词》等标准译法一致
 - 难度、长度、题材、格式均须严格对标 CATTI 二级真题
@@ -649,11 +883,9 @@ function updateProviderConfig() {
 
     document.getElementById('api-key-modal').placeholder = placeholder;
 
-    // 更新模型下拉框
     const modelSelect = document.getElementById('model-name-modal');
     modelSelect.innerHTML = '';
 
-    // 添加分组
     const providerName = API_PROVIDERS[provider]?.name || provider;
     const group = document.createElement('optgroup');
     group.label = providerName;
@@ -673,7 +905,6 @@ function updateProviderConfig() {
 
 // ==================== 配置相关函数 ====================
 
-// 测试 API 连接
 async function testAPIConnection(apiKey, apiUrl, modelName) {
     try {
         const response = await fetch(apiUrl, {
@@ -706,20 +937,17 @@ function loadConfig() {
     const apiKey = localStorage.getItem('apiKey') || '';
     const modelName = localStorage.getItem('modelName') || 'qwen3-coder-next';
 
-    // 更新服务商下拉框
     const providerSelect = document.getElementById('provider-select');
     if (providerSelect) providerSelect.value = provider;
 
     updateProviderConfig();
 
-    // 只填充模态框里的输入框
     const modalApiKey = document.getElementById('api-key-modal');
     const modalModelName = document.getElementById('model-name-modal');
     if (modalApiKey) modalApiKey.value = apiKey;
     if (modalModelName) modalModelName.value = modelName;
 }
 
-// 切换 API Key 显示/隐藏
 function toggleApiKeyVisibility() {
     const input = document.getElementById('api-key-modal');
     input.type = input.type === 'password' ? 'text' : 'password';
@@ -739,11 +967,9 @@ function saveConfig() {
     localStorage.setItem('apiKey', apiKey);
     localStorage.setItem('modelName', modelName);
 
-    // 获取 API URL 并测试连接
     const providerConfig = API_PROVIDERS[provider] || API_PROVIDERS.aliyun;
     const apiUrl = providerConfig.url;
 
-    // 显示保存中状态
     const statusEl = document.getElementById('config-status');
     const originalText = statusEl?.textContent || '';
     if (statusEl) {
@@ -751,7 +977,6 @@ function saveConfig() {
         statusEl.style.color = '#666';
     }
 
-    // 测试 API 连接
     testAPIConnection(apiKey, apiUrl, modelName).then(result => {
         if (statusEl) {
             if (result.success) {
@@ -760,13 +985,11 @@ function saveConfig() {
             } else {
                 statusEl.textContent = '配置失败: ' + result.message;
                 statusEl.style.color = '#ff4444';
-                // 如果测试失败，不关闭模态框，让用户可以修改
                 setTimeout(() => { hideStatus(); }, 5000);
                 return;
             }
         }
 
-        // 测试成功后关闭模态框
         setTimeout(() => {
             if (result.success) {
                 closeConfigModal();
@@ -802,39 +1025,82 @@ function showTab(tabName) {
     document.getElementById(tabName).classList.add('active');
     document.querySelectorAll('.nav-btn').forEach(btn => {
         btn.classList.remove('active');
-        if (btn.textContent.includes(tabName === 'home' ? '首页' : tabName === 'practice' ? '练习' : '批改')) btn.classList.add('active');
+        if (btn.textContent.includes(tabName === 'home' ? '首页' : tabName === 'practice' ? '练习' : tabName === 'exam' ? '考试' : '批改')) btn.classList.add('active');
     });
     if (tabName === 'home') loadStats();
     else if (tabName === 'grading') loadHistory();
 }
 
-// ==================== 练习模式相关 ====================
+// ==================== 模式切换 ====================
 
-function goToPractice() {
+function goToPractice(mode) {
     const apiKey = localStorage.getItem('apiKey');
     if (!apiKey) { showStatus('请先配置 API Key', 'error'); showConfigModal(); return; }
-    showTab('practice');
+    currentMode = mode;
 
-    // 设置默认语言对
-    if (!localStorage.getItem('languagePair')) {
-        localStorage.setItem('languagePair', 'zh-en');
-    }
-    document.getElementById('language-pair').value = localStorage.getItem('languagePair') || 'zh-en';
+    if (mode === 'practice') {
+        showTab('practice');
 
-    // 设置待生成的题目主题
-    if (pendingTopic) {
-        document.getElementById('practice-topic').value = pendingTopic;
-        pendingTopic = null;
+        // 设置默认语言对
+        if (!localStorage.getItem('languagePair')) {
+            localStorage.setItem('languagePair', 'zh-en');
+        }
+        const langPair = localStorage.getItem('languagePair') || 'zh-en';
+        document.getElementById('language-pair').value = langPair;
+
+        // 显示对应的练习区域
+        showLanguagePairSection(langPair);
+
+        // 设置待生成的题目主题
+        if (pendingTopic) {
+            document.getElementById('practice-topic').value = pendingTopic;
+            pendingTopic = null;
+        } else {
+            document.getElementById('practice-topic').value = '经济类';
+        }
     } else {
-        // 默认主题
-        document.getElementById('practice-topic').value = '经济类';
+        showTab('exam');
+        // 考试模式默认显示全部
+        document.getElementById('en-zh-section').style.display = 'block';
+        document.getElementById('zh-en-section').style.display = 'block';
+        // 重置题目状态
+        resetExamState();
     }
-    // 不自动请求题目，只清空界面
-    document.getElementById('source-text').innerHTML = '<div class="placeholder-text">点击下方"生成题目"按钮，AI 将为您生成题目</div>';
-    document.getElementById('target-text').value = '';
-    document.getElementById('grading-content').innerHTML = '<div class="placeholder-text">提交译文后，AI 将为您批改并给出评分与建议</div>';
-    document.getElementById('grade-score').textContent = '--';
-    resetTimer();
+}
+
+// 显示对应语言对的练习区域
+function showLanguagePairSection(langPair) {
+    const zhEnSection = document.getElementById('zh-en-section');
+    const enZhSection = document.getElementById('en-zh-section');
+
+    if (langPair === 'zh-en') {
+        zhEnSection.style.display = 'block';
+        enZhSection.style.display = 'none';
+    } else {
+        zhEnSection.style.display = 'none';
+        enZhSection.style.display = 'block';
+    }
+}
+
+// 切换语言对
+function changeLanguagePair() {
+    const langPair = document.getElementById('language-pair').value;
+    localStorage.setItem('languagePair', langPair);
+    showLanguagePairSection(langPair);
+
+    // 清空当前显示区域的内容
+    const activeSection = document.querySelector('.language-pair-section[style*="display: block"]');
+    if (activeSection) {
+        const questionBlocks = activeSection.querySelectorAll('.question-block');
+        questionBlocks.forEach((block, index) => {
+            const qNum = index + 1;
+            document.getElementById(getSourceTextId(qNum)).innerHTML = '<div class="placeholder-text">点击"生成第' + qNum + '篇"按钮</div>';
+            document.getElementById(getTargetTextId(qNum)).value = '';
+            document.getElementById(getGradingContentId(qNum)).innerHTML = '<div class="placeholder-text">提交后显示批改结果</div>';
+            document.getElementById(getGradeScoreId(qNum)).textContent = '--';
+            questionState[qNum] = { generated: false, graded: false, data: null, result: null, langPair: langPair };
+        });
+    }
 }
 
 // 获取当前主题
@@ -846,55 +1112,67 @@ function getCurrentTopic() {
     return '经济类';
 }
 
-// 获取当前语言对
-function getCurrentLanguagePair() {
-    const select = document.getElementById('language-pair');
-    if (select && select.value) {
-        return select.value;
-    }
-    return 'zh-en';
-}
-
-// 切换语言对
-function changeLanguagePair() {
-    const langPair = getCurrentLanguagePair();
-    localStorage.setItem('languagePair', langPair);
-    document.getElementById('grading-content').innerHTML = '<div class="placeholder-text">请先生成题目</div>';
-    document.getElementById('grade-score').textContent = '--';
-    const submitBtn = document.getElementById('submit-btn');
-    if (submitBtn) submitBtn.style.display = 'none';
-}
-
 // 切换练习主题
 function changePracticeTopic() {
     const topic = getCurrentTopic();
     document.getElementById('practice-topic').value = topic;
-    // 清空当前题目显示
-    document.getElementById('source-text').innerHTML = '<div class="placeholder-text">当前主题：' + topic + '，点击下方"生成题目"按钮，AI 将为您生成题目</div>';
-    document.getElementById('grading-content').innerHTML = '<div class="placeholder-text">请先生成题目</div>';
-    document.getElementById('grade-score').textContent = '--';
-    const submitBtn = document.getElementById('submit-btn');
-    if (submitBtn) submitBtn.style.display = 'none';
+    const activeSection = document.querySelector('.language-pair-section[style*="display: block"]');
+    if (activeSection) {
+        const questionBlocks = activeSection.querySelectorAll('.question-block');
+        questionBlocks.forEach((block, index) => {
+            const qNum = index + 1;
+            document.getElementById(getSourceTextId(qNum)).innerHTML = '<div class="placeholder-text">当前主题：' + topic + '，点击下方"生成第' + qNum + '篇"按钮，AI 将为您生成题目</div>';
+            document.getElementById(getGradingContentId(qNum)).innerHTML = '<div class="placeholder-text">请先生成题目</div>';
+            document.getElementById(getGradeScoreId(qNum)).textContent = '--';
+        });
+    }
 }
 
-// 从当前主题生成题目
-function generateQuestionFromTopic() {
-    const topic = getCurrentTopic();
-    generateQuestion(topic);
-}
-
-// 获取服务商 API URL
-function getApiUrl() {
-    const provider = localStorage.getItem('apiProvider') || 'aliyun';
-    return (API_PROVIDERS[provider] || API_PROVIDERS.aliyun).url;
-}
-
-// 选择主题进入练习页面（不立即生成题目）
+// 选择主题进入练习页面
 function selectTopicForPractice(topic) {
     const apiKey = localStorage.getItem('apiKey');
     if (!apiKey) { showStatus('请先配置 API Key', 'error'); showConfigModal(); return; }
     pendingTopic = topic;
-    goToPractice();
+    goToPractice('practice');
+}
+
+// ==================== 工具函数 ====================
+
+function getQuestionLangPair(questionNum) {
+    return (questionNum === 1 || questionNum === 3) ? 'zh-en' : 'en-zh';
+}
+
+function getSourceTextId(questionNum) {
+    return currentMode === 'practice' ? `source-text-${questionNum}` : `exam-source-text-${questionNum}`;
+}
+
+function getTargetTextId(questionNum) {
+    return currentMode === 'practice' ? `target-text-${questionNum}` : `exam-target-text-${questionNum}`;
+}
+
+function getGradingContentId(questionNum) {
+    return currentMode === 'practice' ? `grading-content-${questionNum}` : `exam-grading-content-${questionNum}`;
+}
+
+function getGradingResultId(questionNum) {
+    return currentMode === 'practice' ? `grading-result-${questionNum}` : `exam-grading-result-${questionNum}`;
+}
+
+function getGradeScoreId(questionNum) {
+    return currentMode === 'practice' ? `grade-score-${questionNum}` : `exam-grade-score-${questionNum}`;
+}
+
+function getWordCountId(questionNum) {
+    return currentMode === 'practice' ? `word-count-${questionNum}` : `exam-word-count-${questionNum}`;
+}
+
+function getSubmitBtnId(questionNum) {
+    return currentMode === 'practice' ? `submit-btn-${questionNum}` : `exam-submit-btn-${questionNum}`;
+}
+
+function getApiUrl() {
+    const provider = localStorage.getItem('apiProvider') || 'aliyun';
+    return (API_PROVIDERS[provider] || API_PROVIDERS.aliyun).url;
 }
 
 async function callAPI(messages, temperature = 0.7) {
@@ -925,7 +1203,6 @@ async function callAPI(messages, temperature = 0.7) {
             throw new Error(data.error?.message || 'API 请求失败');
         }
 
-        // 兼容不同 API 格式
         if (data.output && data.output.choices && data.output.choices.length > 0) {
             return data.output.choices[0].message.content;
         }
@@ -940,26 +1217,101 @@ async function callAPI(messages, temperature = 0.7) {
     }
 }
 
-async function generateQuestion(topic) {
-    showTab('practice');
-    const generatingIndicator = document.getElementById('generating-indicator');
-    const sourceTextEl = document.getElementById('source-text');
-    const apiKey = localStorage.getItem('apiKey');
-    if (!apiKey) { sourceTextEl.innerHTML = '<p class="error-message">错误: 请先配置阿里云 API Key</p><p class="hint">点击左上角配置按钮填写 API Key</p>'; showConfigModal(); return; }
-    generatingIndicator.style.display = 'flex';
+// 获取当前语言对
+function getCurrentLangPair() {
+    if (currentMode === 'practice') {
+        const select = document.getElementById('language-pair');
+        if (select && select.value) return select.value;
+        return 'zh-en';
+    } else {
+        return 'zh-en'; // 考试模式包含两个语言对
+    }
+}
 
-    // 获取语言对
-    const langPair = getCurrentLanguagePair();
+// ==================== 译文输入相关 ====================
+
+function updateWordCount(questionNum) {
+    const text = document.getElementById(getTargetTextId(questionNum)).value;
+    const count = text.replace(/\s/g, '').length;
+    document.getElementById(getWordCountId(questionNum)).textContent = count + ' 字';
+}
+
+function clearTranslation(questionNum) {
+    document.getElementById(getTargetTextId(questionNum)).value = '';
+    updateWordCount(questionNum);
+
+    const gradingContent = document.getElementById(getGradingContentId(questionNum));
+    if (gradingContent) {
+        gradingContent.innerHTML = '<div class="placeholder-text">提交后显示批改结果</div>';
+    }
+
+    document.getElementById(getGradeScoreId(questionNum)).textContent = '--';
+
+    // 重置状态
+    if (questionState[questionNum]) {
+        questionState[questionNum].graded = false;
+        questionState[questionNum].result = null;
+    }
+
+    const submitBtn = document.getElementById(getSubmitBtnId(questionNum));
+    if (submitBtn) submitBtn.style.display = 'none';
+}
+
+function copySource(questionNum) {
+    if (questionState[questionNum] && questionState[questionNum].data && questionState[questionNum].data.source_text) {
+        navigator.clipboard.writeText(questionState[questionNum].data.source_text)
+            .then(() => showStatus('原文已复制', 'success'))
+            .catch(() => showStatus('复制失败', 'error'));
+    }
+}
+
+// ==================== 练习模式 - 生成题目 ====================
+
+function hideAllSubmitButtons() {
+    for (let i = 1; i <= 4; i++) {
+        const btn = document.getElementById(getSubmitBtnId(i));
+        if (btn) btn.style.display = 'none';
+    }
+}
+
+function showSubmitButton(questionNum) {
+    const btn = document.getElementById(getSubmitBtnId(questionNum));
+    if (btn) btn.style.display = 'inline-block';
+}
+
+async function generateQuestion(questionNum) {
+    const topic = getCurrentTopic();
+    const generatingIndicator = document.getElementById('generating-indicator');
+    const sourceTextEl = document.getElementById(getSourceTextId(questionNum));
+    const apiKey = localStorage.getItem('apiKey');
+
+    if (!apiKey) {
+        sourceTextEl.innerHTML = '<p class="error-message">错误: 请先配置 API Key</p><p class="hint">点击左上角配置按钮填写 API Key</p>';
+        showConfigModal();
+        return;
+    }
+
+    generatingIndicator.style.display = 'flex';
+    hideAllSubmitButtons();
 
     try {
-        // 使用出题 Prompt (generator)，传入语言对
+        const langPair = getQuestionLangPair(questionNum);
         const prompt = getGeneratorPrompt(topic, '进阶', langPair);
-        const messages = [{ role: 'system', content: '你是一名专业的CATTI二级笔译官方命题专家。请严格按照要求生成高质量模拟试题。' }, { role: 'user', content: prompt }];
+        const messages = [
+            { role: 'system', content: '你是一名专业的CATTI二级笔译官方命题专家。请严格按照要求生成高质量模拟试题。' },
+            { role: 'user', content: prompt }
+        ];
         const response = await callAPI(messages, 0.7);
+
         let question;
         const jsonMatch = response.match(/\{[\s\S]*\}/);
-        if (jsonMatch) question = JSON.parse(jsonMatch[0]); else throw new Error('无法解析 AI 返回的题目格式');
-        currentQuestion = {
+        if (jsonMatch) {
+            question = JSON.parse(jsonMatch[0]);
+        } else {
+            throw new Error('无法解析 AI 返回的题目格式');
+        }
+
+        const questionData = {
             topic: question.topic || topic,
             source_text: question.source_text || response,
             reference_translation: question.reference_translation || '参考译文待生成',
@@ -969,66 +1321,443 @@ async function generateQuestion(topic) {
             word_count: question.word_count || 0,
             lang_pair: langPair
         };
-        sourceTextEl.innerHTML = '<p>' + escapeHtml(currentQuestion.source_text) + '</p>';
-        document.getElementById('practice-topic').value = currentQuestion.topic;
+
+        questionState[questionNum] = {
+            generated: true,
+            graded: false,
+            data: questionData,
+            result: null,
+            langPair: langPair
+        };
+
+        sourceTextEl.innerHTML = '<p>' + escapeHtml(questionData.source_text) + '</p>';
+
         // 根据语言对更新源语言显示
-        const isZhEn = langPair === 'zh-en';
-        document.getElementById('source-lang').textContent = isZhEn ? '中文' : 'English';
-        document.getElementById('grading-content').innerHTML = '<div class="placeholder-text">请输入译文后点击"提交批改"</div>';
-        document.getElementById('grade-score').textContent = '--';
-        // 显示提交批改按钮
-        const submitBtn = document.getElementById('submit-btn');
-        if (submitBtn) submitBtn.style.display = 'inline-block';
+        const panelLang = sourceTextEl.parentElement.querySelector('.panel-lang');
+        if (panelLang) panelLang.textContent = langPair === 'zh-en' ? '中文' : 'English';
+
+        showSubmitButton(questionNum);
+
     } catch (error) {
-        sourceTextEl.innerHTML = '<p class="error-message">错误: ' + escapeHtml(error.message) + '</p><p class="hint">请检查 API Key 是否正确</p>';
-    } finally { generatingIndicator.style.display = 'none'; }
+        const errorMsg = error.message.includes('Incorrect API key')
+            ? '错误: API Key 不正确或权限不足<br><p class="hint">请检查：<br>1. API Key 是否以 sk- 开头<br>2. API Key 是否有 DashScope 使用权限<br>3. API Key 是否已过期</p>'
+            : '错误: ' + escapeHtml(error.message);
+        sourceTextEl.innerHTML = '<p class="error-message">' + errorMsg + '</p>';
+    } finally {
+        generatingIndicator.style.display = 'none';
+    }
 }
 
-async function generateNextQuestion() { const topic = getCurrentTopic(); const langPair = getCurrentLanguagePair(); await generateQuestion(topic); const submitBtn = document.getElementById('submit-btn'); if (submitBtn) submitBtn.style.display = 'none'; }
+async function generateAllQuestions() {
+    const apiKey = localStorage.getItem('apiKey');
+    if (!apiKey) {
+        showStatus('请先配置 API Key', 'error');
+        showConfigModal();
+        return;
+    }
 
-// ==================== 译文输入相关 ====================
+    const generatingIndicator = document.getElementById('generating-indicator');
+    generatingIndicator.style.display = 'flex';
+    hideAllSubmitButtons();
 
-function clearTranslation() { document.getElementById('target-text').value = ''; updateWordCount(); document.getElementById('grading-content').innerHTML = '<div class="placeholder-text">请输入译文后点击"提交批改"</div>'; document.getElementById('grade-score').textContent = '--'; const submitBtn = document.getElementById('submit-btn'); if (submitBtn) submitBtn.style.display = 'none'; }
-function copySource() { if (currentQuestion && currentQuestion.source_text) { navigator.clipboard.writeText(currentQuestion.source_text).then(() => showStatus('原文已复制', 'success')).catch(() => showStatus('复制失败', 'error')); } }
-function updateWordCount() { const text = document.getElementById('target-text').value; document.getElementById('word-count').textContent = text.replace(/\s/g, '').length + ' 字'; }
+    try {
+        // 获取当前显示的语言对
+        const currentLangPair = getCurrentLangPair();
+        const startNum = currentLangPair === 'zh-en' ? 1 : 3;
 
-// ==================== 计时器 ====================
-
-function startTimer() { if (practiceTimer) clearInterval(practiceTimer); practiceTimer = setInterval(() => { practiceElapsedTime++; const m = Math.floor(practiceElapsedTime / 60), s = practiceElapsedTime % 60; document.getElementById('timer').textContent = String(m).padStart(2, '0') + ':' + String(s).padStart(2, '0'); }, 1000); }
-function resetTimer() { if (practiceTimer) clearInterval(practiceTimer); practiceElapsedTime = 0; document.getElementById('timer').textContent = '00:00'; }
+        for (let i = 0; i < 2; i++) {
+            const questionNum = startNum + i;
+            if (!questionState[questionNum].generated) {
+                await generateQuestion(questionNum);
+                await new Promise(resolve => setTimeout(resolve, 800));
+            } else {
+                showSubmitButton(questionNum);
+            }
+        }
+        showStatus('全部题目生成完成', 'success');
+    } catch (error) {
+        console.error('生成全部题目出错:', error);
+        showStatus('生成题目时出错，请重试', 'error');
+    } finally {
+        generatingIndicator.style.display = 'none';
+    }
+}
 
 // ==================== 提交批改 ====================
 
-async function submitForGrading() {
-    const userText = document.getElementById('target-text').value.trim();
-    if (!userText) { showStatus('请先输入译文', 'error'); return; }
-    if (!currentQuestion) { showStatus('请先生成题目', 'error'); return; }
-    document.getElementById('practice-progress').style.width = '100%';
-    document.getElementById('practice-text').textContent = '1/1';
+async function submitForGrading(questionNum) {
+    const userText = document.getElementById(getTargetTextId(questionNum)).value.trim();
+
+    if (!userText) {
+        showStatus('请先输入译文', 'error');
+        return;
+    }
+
+    if (!questionState[questionNum] || !questionState[questionNum].data) {
+        showStatus('请先生成题目', 'error');
+        return;
+    }
+
     const generatingIndicator = document.getElementById('generating-indicator');
     generatingIndicator.style.display = 'flex';
+    hideAllSubmitButtons();
+
     try {
-        // 使用阅卷 Prompt (evaluator)，传入语言对
-        const langPair = currentQuestion.lang_pair || 'zh-en';
-        const prompt = getEvaluatorPrompt(currentQuestion.source_text, currentQuestion.reference_translation, userText, langPair);
-        const messages = [{ role: 'system', content: '你是一名专业的CATTI二级笔译阅卷专家。请严格按照 CATTI 二级评分标准进行评分。' }, { role: 'user', content: prompt }];
+        const questionData = questionState[questionNum].data;
+        const langPair = questionData.lang_pair || 'zh-en';
+        const prompt = getEvaluatorPrompt(
+            questionData.source_text,
+            questionData.reference_translation,
+            userText,
+            langPair
+        );
+        const messages = [
+            { role: 'system', content: '你是一名专业的CATTI二级笔译阅卷专家。请严格按照 CATTI 二级评分标准进行评分。' },
+            { role: 'user', content: prompt }
+        ];
         const response = await callAPI(messages, 0.5);
+
         let grading;
         const jsonMatch = response.match(/\{[\s\S]*\}/);
-        if (jsonMatch) grading = JSON.parse(jsonMatch[0]); else throw new Error('无法解析 AI 返回的批改格式');
-        const ng = { score: Math.min(100, Math.max(0, grading.score || 70)), comments: grading.comments || response, accuracy_score: Math.min(25, Math.max(0, grading.accuracy_score || 17)), completeness_score: Math.min(25, Math.max(0, grading.completeness_score || 17)), fluency_score: Math.min(25, Math.max(0, grading.fluency_score || 17)), grammar_score: Math.min(25, Math.max(0, grading.grammar_score || 17)), vocabulary_score: Math.min(25, Math.max(0, grading.vocabulary_score || 16)), grammar_mistakes: grading.grammar_mistakes || [], suggestions: grading.suggestions || [] };
-        displayGradingResult(ng);
-        saveToHistory(currentQuestion.topic, ng.score, currentQuestion.source_text, currentQuestion.reference_translation, userText, ng);
+        if (jsonMatch) {
+            grading = JSON.parse(jsonMatch[0]);
+        } else {
+            throw new Error('无法解析 AI 返回的批改格式');
+        }
+
+        // 标准化评分
+        const normalizedGrading = {
+            score: Math.min(100, Math.max(0, grading.score || 70)),
+            comments: grading.comments || response,
+            accuracy_score: Math.min(40, Math.max(0, grading.accuracy_score || 28)),
+            completeness_score: Math.min(20, Math.max(0, grading.completeness_score || 14)),
+            fluency_score: Math.min(30, Math.max(0, grading.fluency_score || 21)),
+            grammar_score: Math.min(25, Math.max(0, grading.grammar_score || 17)),
+            vocabulary_score: Math.min(15, Math.max(0, grading.vocabulary_score || 10)),
+            grammar_mistakes: grading.grammar_mistakes || [],
+            suggestions: grading.suggestions || []
+        };
+
+        questionState[questionNum].result = normalizedGrading;
+        questionState[questionNum].graded = true;
+
+        displayQuestionGradingResult(questionNum, normalizedGrading);
+
+        // 保存到历史
+        saveToHistory(
+            '第' + questionNum + '篇 (' + questionData.topic + ')',
+            normalizedGrading.score,
+            questionData.source_text,
+            questionData.reference_translation,
+            userText,
+            normalizedGrading,
+            questionNum
+        );
+
         showStatus('批改完成', 'success');
+
     } catch (error) {
-        document.getElementById('grading-content').innerHTML = '<div class="error-message">错误: ' + escapeHtml(error.message) + '</div><div class="hint">请检查 API Key 配置</div>';
-    } finally { generatingIndicator.style.display = 'none'; }
+        const errorMsg = escapeHtml(error.message);
+        document.getElementById(getGradingContentId(questionNum)).innerHTML =
+            '<div class="error-message">错误: ' + errorMsg + '</div><div class="hint">请检查 API Key 配置</div>';
+    } finally {
+        generatingIndicator.style.display = 'none';
+    }
 }
 
-function displayGradingResult(grading) {
-    const html = '<div class="grading-header"><div class="score-circle"><span class="score-value">' + grading.score + '</span><span class="score-label">分</span></div></div><div class="grading-details"><div class="score-grid"><div class="score-item"><span class="score-item-label">准确度</span><div class="score-bar"><div class="score-bar-fill" style="width:' + (grading.accuracy_score * 4) + '%"></div><span class="score-bar-value">' + grading.accuracy_score + '/25</span></div></div><div class="score-item"><span class="score-item-label">完整性</span><div class="score-bar"><div class="score-bar-fill" style="width:' + (grading.completeness_score * 4) + '%"></div><span class="score-bar-value">' + grading.completeness_score + '/25</span></div></div><div class="score-item"><span class="score-item-label">流畅度</span><div class="score-bar"><div class="score-bar-fill" style="width:' + (grading.fluency_score * 4) + '%"></div><span class="score-bar-value">' + grading.fluency_score + '/25</span></div></div><div class="score-item"><span class="score-item-label">语法</span><div class="score-bar"><div class="score-bar-fill" style="width:' + (grading.grammar_score * 4) + '%"></div><span class="score-bar-value">' + grading.grammar_score + '/25</span></div></div><div class="score-item"><span class="score-item-label">词汇</span><div class="score-bar"><div class="score-bar-fill" style="width:' + (grading.vocabulary_score * 4) + '%"></div><span class="score-bar-value">' + grading.vocabulary_score + '/25</span></div></div></div></div><div class="grading-feedback"><h4>总体评价</h4><p class="comments-text">' + escapeHtml(grading.comments) + '</p></div>' + (grading.grammar_mistakes && grading.grammar_mistakes.length > 0 ? '<div class="grading-feedback"><h4>语法错误</h4><ul class="mistakes-list">' + grading.grammar_mistakes.map(m => '<li>' + escapeHtml(m) + '</li>').join('') + '</ul></div>' : '') + (grading.suggestions && grading.suggestions.length > 0 ? '<div class="grading-feedback"><h4>改进建议</h4><ul class="suggestions-list">' + grading.suggestions.map(s => '<li>' + escapeHtml(s) + '</li>').join('') + '</ul></div>' : '');
-    document.getElementById('grading-content').innerHTML = html;
-    document.getElementById('grade-score').textContent = grading.score;
+function displayQuestionGradingResult(questionNum, grading) {
+    const html = `
+        <div class="grading-header">
+            <div class="score-circle">
+                <span class="score-value">${grading.score}</span>
+                <span class="score-label">分</span>
+            </div>
+        </div>
+        <div class="grading-details">
+            <div class="score-grid">
+                <div class="score-item">
+                    <span class="score-item-label">准确度</span>
+                    <div class="score-bar">
+                        <div class="score-bar-fill" style="width: ${grading.accuracy_score * 2.5}%"></div>
+                        <span class="score-bar-value">${grading.accuracy_score}/40</span>
+                    </div>
+                </div>
+                <div class="score-item">
+                    <span class="score-item-label">完整性</span>
+                    <div class="score-bar">
+                        <div class="score-bar-fill" style="width: ${grading.completeness_score * 5}%"></div>
+                        <span class="score-bar-value">${grading.completeness_score}/20</span>
+                    </div>
+                </div>
+                <div class="score-item">
+                    <span class="score-item-label">流畅度</span>
+                    <div class="score-bar">
+                        <div class="score-bar-fill" style="width: ${grading.fluency_score * 3.33}%"></div>
+                        <span class="score-bar-value">${grading.fluency_score}/30</span>
+                    </div>
+                </div>
+                <div class="score-item">
+                    <span class="score-item-label">语法</span>
+                    <div class="score-bar">
+                        <div class="score-bar-fill" style="width: ${grading.grammar_score * 4}%"></div>
+                        <span class="score-bar-value">${grading.grammar_score}/25</span>
+                    </div>
+                </div>
+                <div class="score-item">
+                    <span class="score-item-label">词汇</span>
+                    <div class="score-bar">
+                        <div class="score-bar-fill" style="width: ${grading.vocabulary_score * 6.67}%"></div>
+                        <span class="score-bar-value">${grading.vocabulary_score}/15</span>
+                    </div>
+                </div>
+            </div>
+        </div>
+        <div class="grading-feedback">
+            <h4>总体评价</h4>
+            <p class="comments-text">${escapeHtml(grading.comments)}</p>
+        </div>
+        ${grading.grammar_mistakes && grading.grammar_mistakes.length > 0 ? `
+        <div class="grading-feedback">
+            <h4>语法错误</h4>
+            <ul class="mistakes-list">
+                ${grading.grammar_mistakes.map(m => '<li>' + escapeHtml(m) + '</li>').join('')}
+            </ul>
+        </div>
+        ` : ''}
+        ${grading.suggestions && grading.suggestions.length > 0 ? `
+        <div class="grading-feedback">
+            <h4>改进建议</h4>
+            <ul class="suggestions-list">
+                ${grading.suggestions.map(s => '<li>' + escapeHtml(s) + '</li>').join('')}
+            </ul>
+        </div>
+        ` : ''}
+    `;
+
+    document.getElementById(getGradingContentId(questionNum)).innerHTML = html;
+    document.getElementById(getGradeScoreId(questionNum)).textContent = grading.score;
+}
+
+// ==================== 考试模式 ====================
+
+function resetExamState() {
+    for (let i = 1; i <= 4; i++) {
+        questionState[i] = { generated: false, graded: false, data: null, result: null, langPair: getQuestionLangPair(i) };
+    }
+}
+
+async function generateExamQuestion(questionNum) {
+    const topic = document.getElementById('exam-topic').value || '经济类';
+    const generatingIndicator = document.getElementById('exam-generating-indicator');
+    const sourceTextEl = document.getElementById(getSourceTextId(questionNum));
+    const apiKey = localStorage.getItem('apiKey');
+
+    if (!apiKey) {
+        sourceTextEl.innerHTML = '<p class="error-message">错误: 请先配置 API Key</p><p class="hint">点击左上角配置按钮填写 API Key</p>';
+        showConfigModal();
+        return;
+    }
+
+    generatingIndicator.style.display = 'flex';
+    hideAllSubmitButtons();
+
+    try {
+        const langPair = getQuestionLangPair(questionNum);
+        const prompt = getGeneratorPrompt(topic, '进阶', langPair);
+        const messages = [
+            { role: 'system', content: '你是一名专业的CATTI二级笔译官方命题专家。请严格按照要求生成高质量模拟试题。' },
+            { role: 'user', content: prompt }
+        ];
+        const response = await callAPI(messages, 0.7);
+
+        let question;
+        const jsonMatch = response.match(/\{[\s\S]*\}/);
+        if (jsonMatch) {
+            question = JSON.parse(jsonMatch[0]);
+        } else {
+            throw new Error('无法解析 AI 返回的题目格式');
+        }
+
+        const questionData = {
+            topic: question.topic || topic,
+            source_text: question.source_text || response,
+            reference_translation: question.reference_translation || '参考译文待生成',
+            difficulty: question.difficulty || '进阶',
+            core_points: question.core_points || question.keywords || ['通用考点'],
+            source_type: question.source_type || '原创',
+            word_count: question.word_count || 0,
+            lang_pair: langPair
+        };
+
+        questionState[questionNum] = {
+            generated: true,
+            graded: false,
+            data: questionData,
+            result: null,
+            langPair: langPair
+        };
+
+        sourceTextEl.innerHTML = '<p>' + escapeHtml(questionData.source_text) + '</p>';
+
+        const panelLang = sourceTextEl.parentElement.querySelector('.panel-lang');
+        if (panelLang) panelLang.textContent = langPair === 'zh-en' ? '中文' : 'English';
+
+        showSubmitButton(questionNum);
+
+    } catch (error) {
+        const errorMsg = '错误: ' + escapeHtml(error.message);
+        sourceTextEl.innerHTML = '<p class="error-message">' + errorMsg + '</p>';
+    } finally {
+        generatingIndicator.style.display = 'none';
+    }
+}
+
+async function generateAllExamQuestions() {
+    const apiKey = localStorage.getItem('apiKey');
+    if (!apiKey) {
+        showStatus('请先配置 API Key', 'error');
+        showConfigModal();
+        return;
+    }
+
+    const generatingIndicator = document.getElementById('exam-generating-indicator');
+    generatingIndicator.style.display = 'flex';
+    hideAllSubmitButtons();
+
+    try {
+        for (let i = 1; i <= 4; i++) {
+            if (!questionState[i].generated) {
+                await generateExamQuestion(i);
+                await new Promise(resolve => setTimeout(resolve, 800));
+            } else {
+                showSubmitButton(i);
+            }
+        }
+        showStatus('全部题目生成完成', 'success');
+    } catch (error) {
+        console.error('生成全部题目出错:', error);
+        showStatus('生成题目时出错，请重试', 'error');
+    } finally {
+        generatingIndicator.style.display = 'none';
+    }
+}
+
+function changeExamTopic() {
+    const topic = document.getElementById('exam-topic').value;
+    for (let i = 1; i <= 4; i++) {
+        if (!questionState[i].generated) {
+            const sourceTextEl = document.getElementById(getSourceTextId(i));
+            if (sourceTextEl) {
+                sourceTextEl.innerHTML = '<div class="placeholder-text">当前主题：' + topic + '，点击下方"生成第' + i + '篇"按钮，AI 将为您生成题目</div>';
+            }
+        }
+    }
+}
+
+// ==================== 计算总分 ====================
+
+function calculateTotalScore() {
+    let totalScore = 0;
+    let gradedCount = 0;
+    let totalAccuracy = 0;
+    let totalCompleteness = 0;
+    let totalFluency = 0;
+    let totalGrammar = 0;
+    let totalVocabulary = 0;
+
+    const results = [];
+
+    for (let i = 1; i <= 4; i++) {
+        if (questionState[i] && questionState[i].graded && questionState[i].result) {
+            const result = questionState[i].result;
+            totalScore += result.score;
+            gradedCount++;
+
+            totalAccuracy += result.accuracy_score;
+            totalCompleteness += result.completeness_score;
+            totalFluency += result.fluency_score;
+            totalGrammar += result.grammar_score;
+            totalVocabulary += result.vocabulary_score;
+
+            results.push({
+                questionNum: i,
+                score: result.score,
+                topic: questionState[i].data?.topic || '未知主题'
+            });
+        }
+    }
+
+    if (gradedCount === 0) {
+        showStatus('请先完成至少一篇批改', 'error');
+        return;
+    }
+
+    const avgScore = Math.round(totalScore / gradedCount);
+
+    const totalHtml = `
+        <div class="grading-header" style="justify-content: center; gap: 10px;">
+            <div class="score-circle">
+                <span class="score-value">${totalScore}</span>
+                <span class="score-label">分</span>
+            </div>
+            <span style="color: #666;">总分</span>
+            <div class="score-circle">
+                <span class="score-value">${avgScore}</span>
+                <span class="score-label">平均</span>
+            </div>
+        </div>
+        <div class="grading-details">
+            <div class="score-grid">
+                <div class="score-item">
+                    <span class="score-item-label">准确度</span>
+                    <div class="score-bar">
+                        <div class="score-bar-fill" style="width: ${totalAccuracy * 2.5}%"></div>
+                        <span class="score-bar-value">${totalAccuracy}/160</span>
+                    </div>
+                </div>
+                <div class="score-item">
+                    <span class="score-item-label">完整性</span>
+                    <div class="score-bar">
+                        <div class="score-bar-fill" style="width: ${totalCompleteness * 5}%"></div>
+                        <span class="score-bar-value">${totalCompleteness}/80</span>
+                    </div>
+                </div>
+                <div class="score-item">
+                    <span class="score-item-label">流畅度</span>
+                    <div class="score-bar">
+                        <div class="score-bar-fill" style="width: ${totalFluency * 3.33}%"></div>
+                        <span class="score-bar-value">${totalFluency}/120</span>
+                    </div>
+                </div>
+                <div class="score-item">
+                    <span class="score-item-label">语法</span>
+                    <div class="score-bar">
+                        <div class="score-bar-fill" style="width: ${totalGrammar * 4}%"></div>
+                        <span class="score-bar-value">${totalGrammar}/100</span>
+                    </div>
+                </div>
+                <div class="score-item">
+                    <span class="score-item-label">词汇</span>
+                    <div class="score-bar">
+                        <div class="score-bar-fill" style="width: ${totalVocabulary * 6.67}%"></div>
+                        <span class="score-bar-value">${totalVocabulary}/60</span>
+                    </div>
+                </div>
+            </div>
+        </div>
+        <div class="grading-feedback">
+            <h4>各题得分详情</h4>
+            <ul class="suggestions-list">
+                ${results.map(r => '<li><strong>第' + r.questionNum + '篇 (' + r.topic + ')</strong>: <span class="' + getScoreClass(r.score) + '">' + r.score + '分</span></li>').join('')}
+            </ul>
+        </div>
+    `;
+
+    const totalContent = document.getElementById('exam-total-content');
+    if (totalContent) totalContent.innerHTML = totalHtml;
+    document.getElementById('exam-total-score').textContent = totalScore;
+
+    showStatus('总分计算完成', 'success');
 }
 
 // ==================== 统计数据 ====================
@@ -1038,42 +1767,18 @@ function loadStats() {
         const history = JSON.parse(localStorage.getItem('gradingHistory') || '[]');
         const total = history.length;
         const avgScore = history.length > 0 ? Math.round(history.reduce((sum, h) => sum + h.score, 0) / history.length) : 0;
-        const el = document.getElementById('total-practices'); if (el) el.textContent = total;
-        const el2 = document.getElementById('avg-score'); if (el2) el2.textContent = avgScore;
-        const el3 = document.getElementById('study-time'); if (el3) el3.textContent = Math.floor(total * 10 / 60) + 'h';
-    } catch (e) { console.error('加载统计数据失败:', e); }
-}
+        const totalEl = document.getElementById('total-practices');
+        const avgEl = document.getElementById('avg-score');
+        const timeEl = document.getElementById('study-time');
 
-function saveToHistory(topic, score, sourceText, referenceTranslation, userTranslation, grading) {
-    // 先加载历史记录
-    const history = JSON.parse(localStorage.getItem('gradingHistory') || '[]');
+        if (totalEl) totalEl.textContent = total;
+        if (avgEl) avgEl.textContent = avgScore;
 
-    // 创建包含完整详情的新记录
-    const newRecord = {
-        topic: topic,
-        score: score,
-        timestamp: new Date().toISOString(),
-        source_text: sourceText || '',
-        reference_translation: referenceTranslation || '',
-        user_translation: userTranslation || '',
-        grading: grading || {
-            score: score,
-            comments: '',
-            accuracy_score: 0,
-            completeness_score: 0,
-            fluency_score: 0,
-            grammar_score: 0,
-            vocabulary_score: 0,
-            grammar_mistakes: [],
-            suggestions: []
-        }
-    };
-
-    // 添加到历史记录开头
-    history.unshift(newRecord);
-
-    // 保存最近 50 条
-    localStorage.setItem('gradingHistory', JSON.stringify(history.slice(0, 50)));
+        const studyHours = Math.floor(total * 10 / 60);
+        if (timeEl) timeEl.textContent = studyHours + 'h';
+    } catch (e) {
+        console.error('加载统计数据失败:', e);
+    }
 }
 
 // ==================== 批改历史 ====================
@@ -1096,16 +1801,52 @@ function loadHistory() {
             '</div>' +
             '</div>'
         ).join('');
-    } catch (e) { console.error('加载历史记录失败:', e); }
+    } catch (e) {
+        console.error('加载历史记录失败:', e);
+    }
 }
 
-// 查看批改详情
+function clearHistory() {
+    if (confirm('确定要清空所有批改历史吗？')) {
+        localStorage.removeItem('gradingHistory');
+        document.getElementById('grading-history').innerHTML = '<div class="empty-history">暂无批改记录</div>';
+        loadStats();
+    }
+}
+
+function saveToHistory(topic, score, sourceText, referenceTranslation, userTranslation, grading, questionNum) {
+    const history = JSON.parse(localStorage.getItem('gradingHistory') || '[]');
+
+    const newRecord = {
+        topic: topic,
+        score: score,
+        timestamp: new Date().toISOString(),
+        source_text: sourceText || '',
+        reference_translation: referenceTranslation || '',
+        user_translation: userTranslation || '',
+        grading: grading || {
+            score: score,
+            comments: '',
+            accuracy_score: 0,
+            completeness_score: 0,
+            fluency_score: 0,
+            grammar_score: 0,
+            vocabulary_score: 0,
+            grammar_mistakes: [],
+            suggestions: []
+        },
+        question_num: questionNum
+    };
+
+    history.unshift(newRecord);
+    localStorage.setItem('gradingHistory', JSON.stringify(history.slice(0, 50)));
+}
+
 function viewGradingDetail(index) {
     const history = JSON.parse(localStorage.getItem('gradingHistory') || '[]');
     const record = history[index];
     if (!record) return;
 
-    // 详情就在记录对象中
     const detail = {
         source_text: record.source_text || '',
         reference_translation: record.reference_translation || '',
@@ -1128,7 +1869,6 @@ function viewGradingDetail(index) {
     document.getElementById('grading-detail-modal').style.display = 'flex';
 }
 
-// 生成详情页面 HTML
 function generateGradingDetailHTML(record, detail) {
     const grading = detail.grading || {
         score: record.score,
@@ -1147,39 +1887,32 @@ function generateGradingDetailHTML(record, detail) {
         '<span class="detail-time">' + formatTime(record.timestamp) + '</span>' +
         '</div>';
 
-    // 评分详情
     html += '<div class="detail-score-grid">' +
         '<div class="score-item"><span>准确度</span><div class="score-bar"><div style="width:' + (grading.accuracy_score * 2.5) + '%"></div><span>' + grading.accuracy_score + '/40</span></div></div>' +
         '<div class="score-item"><span>完整性</span><div class="score-bar"><div style="width:' + (grading.completeness_score * 5) + '%"></div><span>' + grading.completeness_score + '/20</span></div></div>' +
         '<div class="score-item"><span>流畅度</span><div class="score-bar"><div style="width:' + (grading.fluency_score * 3.33) + '%"></div><span>' + grading.fluency_score + '/30</span></div></div>' +
         '<div class="score-item"><span>语法</span><div class="score-bar"><div style="width:' + (grading.grammar_score * 4) + '%"></div><span>' + grading.grammar_score + '/25</span></div></div>' +
         '<div class="score-item"><span>词汇</span><div class="score-bar"><div style="width:' + (grading.vocabulary_score * 6.67) + '%"></div><span>' + grading.vocabulary_score + '/15</span></div></div>' +
-        '</div>';
+    '</div>';
 
-    // 原文
     if (detail.source_text && detail.source_text !== '原文已过期') {
         html += '<div class="detail-section"><h4>原文</h4><div class="detail-text">' + escapeHtml(detail.source_text) + '</div></div>';
     }
 
-    // 参考译文
     if (detail.reference_translation && detail.reference_translation !== '参考译文已过期') {
         html += '<div class="detail-section"><h4>参考译文</h4><div class="detail-text">' + escapeHtml(detail.reference_translation) + '</div></div>';
     }
 
-    // 用户译文
     if (detail.user_translation && detail.user_translation !== '译文已过期') {
         html += '<div class="detail-section"><h4>用户译文</h4><div class="detail-text user-text">' + escapeHtml(detail.user_translation) + '</div></div>';
     }
 
-    // 评分结果
     html += '<div class="detail-section"><h4>总体评价</h4><div class="detail-text">' + escapeHtml(grading.comments) + '</div></div>';
 
-    // 语法错误
     if (grading.grammar_mistakes && grading.grammar_mistakes.length > 0) {
         html += '<div class="detail-section"><h4>语法错误</h4><ul class="mistakes-list">' + grading.grammar_mistakes.map(m => '<li>' + escapeHtml(m) + '</li>').join('') + '</ul></div>';
     }
 
-    // 改进建议
     if (grading.suggestions && grading.suggestions.length > 0) {
         html += '<div class="detail-section"><h4>改进建议</h4><ul class="suggestions-list">' + grading.suggestions.map(s => '<li>' + escapeHtml(s) + '</li>').join('') + '</ul></div>';
     }
@@ -1187,25 +1920,51 @@ function generateGradingDetailHTML(record, detail) {
     return html;
 }
 
-// 关闭详情模态框
 function closeGradingDetail() {
     document.getElementById('grading-detail-modal').style.display = 'none';
 }
 
-function clearHistory() { if (confirm('确定要清空所有批改历史吗？')) { localStorage.removeItem('gradingHistory'); document.getElementById('grading-history').innerHTML = '<div class="empty-history">暂无批改记录</div>'; loadStats(); } }
-
 // ==================== 工具函数 ====================
 
-function escapeHtml(text) { if (!text) return ''; return text.replace(/&/g, '&amp;').replace(/</g, '&lt;').replace(/>/g, '&gt;').replace(/"/g, '&quot;').replace(/'/g, '&#039;'); }
-function getScoreClass(score) { if (score >= 85) return 'score-high'; if (score >= 70) return 'score-medium'; return 'score-low'; }
-function formatTime(ts) { if (!ts) return ''; const d = new Date(ts); return d.getFullYear() + '-' + String(d.getMonth() + 1).padStart(2, '0') + '-' + String(d.getDate()).padStart(2, '0') + ' ' + String(d.getHours()).padStart(2, '0') + ':' + String(d.getMinutes()).padStart(2, '0'); }
+function escapeHtml(text) {
+    if (!text) return '';
+    return text.replace(/&/g, '&amp;').replace(/</g, '&lt;').replace(/>/g, '&gt;').replace(/"/g, '&quot;').replace(/'/g, '&#039;');
+}
+
+function getScoreClass(score) {
+    if (score >= 85) return 'score-high';
+    if (score >= 70) return 'score-medium';
+    return 'score-low';
+}
+
+function formatTime(ts) {
+    if (!ts) return '';
+    const d = new Date(ts);
+    return d.getFullYear() + '-' + String(d.getMonth() + 1).padStart(2, '0') + '-' + String(d.getDate()).padStart(2, '0') + ' ' + String(d.getHours()).padStart(2, '0') + ':' + String(d.getMinutes()).padStart(2, '0');
+}
+
+// ==================== 计时器 ====================
+
+function startTimer() {
+    if (practiceTimer) clearInterval(practiceTimer);
+    practiceTimer = setInterval(() => {
+        practiceElapsedTime++;
+        const m = Math.floor(practiceElapsedTime / 60), s = practiceElapsedTime % 60;
+        document.getElementById('timer').textContent = String(m).padStart(2, '0') + ':' + String(s).padStart(2, '0');
+    }, 1000);
+}
+
+function resetTimer() {
+    if (practiceTimer) clearInterval(practiceTimer);
+    practiceElapsedTime = 0;
+    document.getElementById('timer').textContent = '00:00';
+}
 
 // 页面初始化
 document.addEventListener('DOMContentLoaded', () => {
     loadConfig();
     loadStats();
     loadHistory();
-    document.getElementById('target-text').addEventListener('input', updateWordCount);
     startTimer();
 });
     </script>
