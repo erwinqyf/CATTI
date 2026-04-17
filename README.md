@@ -1,5 +1,13 @@
 CATTI 二笔练习网站（个人用）
 
+# 260417 Update
+- added **错题集** (Mistakes Collection) - track weaknesses and review later
+- improved **批改prompt** - added comparative analysis requirements
+- added **对照格式显示** (Comparative Display) - side-by-side user vs reference translation with CATTI scoring explanations
+- added **知识点自动提取** (Auto Knowledge Extraction) - term compilation, sentence patterns, expressions from reference translations
+- enhanced **批改历史** - added delete button for individual records
+- improved **错题集联动** - one-click add from grading results, organized by terminology, sentence patterns, highlights
+
 # 260415 Update
 - added exam mode
 - added more topics

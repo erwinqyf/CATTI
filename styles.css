@@ -613,12 +613,14 @@ body {
     margin-bottom: 24px;
     padding-bottom: 20px;
     border-bottom: 1px solid rgba(0, 0, 0, 0.1);
+    flex-wrap: wrap;
 }
 
 .grading-title {
     font-size: 24px;
     font-weight: 700;
     color: #1d1d1f;
+    flex: 1;
 }
 
 .grading-history {
@@ -1011,6 +1013,495 @@ body {
 
 .view-btn:hover {
     background: #c7d2fe;
+}
+
+.error-message {
+    color: #ff3b30;
+    margin-bottom: 12px;
+}
+
+.hint {
+    color: #999;
+    font-size: 13px;
+}
+
+/* 批改结果参考译文样式 */
+.grading-feedback h4 {
+    font-size: 14px;
+    font-weight: 600;
+    color: #666;
+    margin-bottom: 12px;
+}
+
+.grading-feedback h4 sup {
+    font-style: italic;
+    color: #6366f1;
+    margin-left: 6px;
+    font-size: 10px;
+}
+
+.reference-text {
+    background: linear-gradient(135deg, #f0f9ff 0%, #e0f2fe 100%);
+    border: 1px solid #bae6fd;
+    padding: 16px;
+    border-radius: 12px;
+    font-size: 15px;
+    line-height: 1.8;
+    color: #0369a1;
+    max-height: 200px;
+    overflow-y: auto;
+    font-family: "Times New Roman", serif;
+}
+
+.study-points-section {
+    margin-bottom: 16px;
+}
+
+.study-points-section:last-child {
+    margin-bottom: 0;
+}
+
+.study-points-section h5 {
+    font-size: 12px;
+    font-weight: 600;
+    color: #6366f1;
+    margin-bottom: 8px;
+    text-transform: uppercase;
+    letter-spacing: 0.5px;
+}
+
+.study-points-list {
+    list-style: none;
+    padding: 0;
+    margin: 0;
+}
+
+.study-points-list li {
+    font-size: 14px;
+    color: #333;
+    padding: 8px 12px;
+    margin-bottom: 6px;
+    background: rgba(99, 102, 241, 0.05);
+    border-radius: 8px;
+    border-left: 3px solid #6366f1;
+    line-height: 1.6;
+}
+
+.study-points-list li:last-child {
+    margin-bottom: 0;
+}
+
+/* 错题集样式 */
+.mistakes-container {
+    margin-bottom: 40px;
+}
+
+.mistake-item-card {
+    background: white;
+    border-radius: 20px;
+    padding: 24px;
+    margin-bottom: 20px;
+    box-shadow: 0 4px 20px rgba(0, 0, 0, 0.06);
+    border-left: 4px solid #ff3b30;
+}
+
+.mistake-header {
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    margin-bottom: 16px;
+    padding-bottom: 16px;
+    border-bottom: 1px solid rgba(0, 0, 0, 0.05);
+}
+
+.mistake-title {
+    display: flex;
+    align-items: center;
+    gap: 12px;
+}
+
+.mistake-topic {
+    font-size: 16px;
+    font-weight: 600;
+    color: #1d1d1f;
+}
+
+.mistake-item-card .mistake-score {
+    padding: 4px 10px;
+    border-radius: 8px;
+    font-size: 12px;
+    font-weight: 600;
+}
+
+.mistake-meta {
+    display: flex;
+    align-items: center;
+    gap: 10px;
+}
+
+.mistake-time {
+    font-size: 12px;
+    color: #999;
+}
+
+.mistake-btn {
+    font-size: 12px;
+    cursor: pointer;
+    padding: 4px 10px;
+    border-radius: 8px;
+    background: #fff0f0;
+    color: #ff3b30;
+    transition: all 0.2s ease;
+}
+
+.mistake-btn:hover {
+    background: #ffe0e0;
+}
+
+.mistake-btn.active {
+    background: #ff3b30;
+    color: white;
+}
+
+.delete-btn {
+    font-size: 12px;
+    cursor: pointer;
+    padding: 4px 10px;
+    border-radius: 8px;
+    background: #ffe4e4;
+    color: #dc2626;
+    transition: all 0.2s ease;
+}
+
+.delete-btn:hover {
+    background: #fecaca;
+}
+
+/* 批改对照分析样式 */
+.comparative-section {
+    margin-top: 24px;
+}
+
+.comparative-analysis {
+    display: flex;
+    flex-direction: column;
+    gap: 20px;
+}
+
+.comparative-item {
+    background: white;
+    border: 1px solid rgba(0, 0, 0, 0.1);
+    border-radius: 16px;
+    overflow: hidden;
+    box-shadow: 0 2px 8px rgba(0, 0, 0, 0.05);
+}
+
+.comparative-left,
+.comparative-right {
+    padding: 16px;
+    flex: 1;
+}
+
+.comparative-label {
+    font-size: 12px;
+    font-weight: 600;
+    color: #999;
+    margin-bottom: 8px;
+    text-transform: uppercase;
+    letter-spacing: 0.5px;
+}
+
+.comparative-text {
+    font-size: 14px;
+    line-height: 1.8;
+    color: #333;
+}
+
+.user-text {
+    color: #dc2626;
+}
+
+.ref-text {
+    color: #16a34a;
+    font-weight: 500;
+}
+
+.comparative-explanation {
+    padding: 16px;
+    background: linear-gradient(135deg, #fffbeb 0%, #fef3c7 100%);
+    border-top: 1px solid rgba(0, 0, 0, 0.05);
+    display: flex;
+    gap: 12px;
+    align-items: flex-start;
+}
+
+.explanation-icon {
+    font-size: 20px;
+    flex-shrink: 0;
+}
+
+.explanation-content .exp-title {
+    display: block;
+    font-size: 13px;
+    font-weight: 600;
+    color: #d97706;
+    margin-bottom: 4px;
+}
+
+.explanation-content .exp-diff {
+    font-size: 14px;
+    color: #92400e;
+    margin-bottom: 8px;
+    line-height: 1.6;
+}
+
+.explanation-content .exp-reason {
+    font-size: 14px;
+    color: #166534;
+    line-height: 1.6;
+}
+
+/* 错题集对照分析样式 */
+.comparative-analysis-small {
+    display: flex;
+    flex-direction: column;
+    gap: 12px;
+    max-height: 300px;
+    overflow-y: auto;
+}
+
+.comparative-item-small {
+    background: rgba(0, 0, 0, 0.03);
+    border-radius: 12px;
+    padding: 12px;
+}
+
+.comparative-left-small,
+.comparative-right-small {
+    margin-bottom: 8px;
+}
+
+.comparative-label-small {
+    font-size: 11px;
+    font-weight: 600;
+    color: #999;
+    margin-bottom: 4px;
+}
+
+.comparative-text-small {
+    font-size: 13px;
+    line-height: 1.5;
+}
+
+.user-text-small {
+    color: #dc2626;
+}
+
+.ref-text-small {
+    color: #16a34a;
+    font-weight: 500;
+}
+
+.comparative-exp-small {
+    display: flex;
+    align-items: flex-start;
+    gap: 8px;
+    padding-left: 12px;
+}
+
+.exp-icon-small {
+    font-size: 14px;
+    flex-shrink: 0;
+}
+
+.exp-text-small {
+    font-size: 12px;
+    color: #d97706;
+    line-height: 1.4;
+}
+
+.mistake-item.mistake-item-card {
+    border-left: 4px solid #ff3b30;
+}
+
+.mistake-body {
+    margin-top: 16px;
+}
+
+.mistake-section {
+    margin-bottom: 16px;
+}
+
+.mistake-section:last-child {
+    margin-bottom: 0;
+}
+
+.mistake-section h4 {
+    font-size: 13px;
+    font-weight: 600;
+    color: #666;
+    margin-bottom: 8px;
+    display: flex;
+    align-items: center;
+    gap: 6px;
+}
+
+.section-icon {
+    font-size: 14px;
+}
+
+.study-list {
+    list-style: none;
+    padding: 0;
+    margin: 0;
+}
+
+.study-list li {
+    font-size: 14px;
+    color: #333;
+    padding: 8px 12px;
+    margin-bottom: 6px;
+    background: rgba(0, 0, 0, 0.03);
+    border-radius: 8px;
+    line-height: 1.6;
+}
+
+.study-list li:last-child {
+    margin-bottom: 0;
+}
+
+.mistake-highlight {
+    background: rgba(255, 59, 48, 0.05);
+    border-radius: 12px;
+    padding: 16px;
+}
+
+.mistake-highlight h4 {
+    color: #ff3b30;
+}
+
+.empty-tip {
+    text-align: center;
+    padding: 20px;
+    color: #999;
+    font-style: italic;
+}
+
+/* 错题集样式-笔记本视图 */
+.mistakes-notebook {
+    max-height: 60vh;
+    overflow-y: auto;
+}
+
+.notebook-section {
+    margin-bottom: 24px;
+}
+
+.notebook-section:last-child {
+    margin-bottom: 0;
+}
+
+.notebook-section h4 {
+    font-size: 14px;
+    font-weight: 600;
+    color: #666;
+    margin-bottom: 12px;
+    text-transform: uppercase;
+    letter-spacing: 0.5px;
+}
+
+.notebook-table {
+    width: 100%;
+    border-collapse: collapse;
+}
+
+.notebook-table td {
+    padding: 12px 16px;
+    margin-bottom: 8px;
+    border-bottom: 1px solid rgba(0, 0, 0, 0.05);
+}
+
+.notebook-table td:last-child {
+    border-bottom: none;
+}
+
+.notebook-term {
+    font-family: 'Consolas', 'Monaco', monospace;
+    background: rgba(52, 199, 89, 0.1);
+    color: #34c759;
+    border-radius: 6px;
+    padding: 8px 12px;
+}
+
+.notebook-pattern {
+    font-style: italic;
+    color: #6366f1;
+}
+
+.notebook-highlight {
+    color: #1d1d1f;
+    font-weight: 500;
+}
+
+.notebook-area {
+    color: #ff3b30;
+    font-weight: 500;
+}
+
+/* 批改历史中的错题标记 */
+.mistake-item {
+    border-left: 4px solid #ff3b30;
+    background: rgba(255, 59, 48, 0.03);
+}
+
+.mistake-item .history-header {
+    color: #ff3b30;
+}
+
+.mistake-item .history-topic {
+    font-weight: 600;
+}
+
+/* 批改历史操作按钮 */
+.history-actions {
+    display: flex;
+    align-items: center;
+    gap: 8px;
+}
+
+/* 历史项鼠标悬停效果 */
+.history-item:hover {
+    box-shadow: 0 8px 24px rgba(0, 0, 0, 0.1);
+}
+
+/* 响应式调整 */
+@media (max-width: 768px) {
+    .mistake-header {
+        flex-direction: column;
+        align-items: flex-start;
+        gap: 12px;
+    }
+
+    .mistake-title {
+        flex-direction: column;
+        align-items: flex-start;
+        width: 100%;
+    }
+
+    .mistake-meta {
+        width: 100%;
+        flex-wrap: wrap;
+    }
+
+    .history-item {
+        flex-direction: column;
+        gap: 12px;
+    }
+
+    .history-actions {
+        width: 100%;
+        justify-content: space-between;
+    }
 }
 
 /* 语言对选择器样式 */

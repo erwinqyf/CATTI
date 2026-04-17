@@ -554,12 +554,75 @@
                     </svg>
                 </button>
                 <h2 class="grading-title">批改历史</h2>
+                <button class="btn btn-outline" onclick="showTab('mistakes')" style="padding: 8px 16px; font-size: 14px;">
+                    <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+                        <path d="M10.29 3.86L1.82 18a2 2 0 0 0 1.71 3h16.94a2 2 0 0 0 1.71-3L13.71 3.86a2 2 0 0 0-3.42 0z"></path>
+                        <line x1="12" y1="9" x2="12" y2="13"></line>
+                        <line x1="12" y1="17" x2="12.01" y2="17"></line>
+                    </svg>
+                    错题集
+                </button>
             </div>
             <div class="grading-history" id="grading-history">
                 <div class="empty-history">暂无批改记录</div>
             </div>
             <div class="grading-actions">
                 <button class="btn btn-outline" onclick="clearHistory()">清空历史</button>
+            </div>
+        </section>
+
+        <!-- 错题集页面 -->
+        <section id="mistakes" class="section">
+            <div class="practice-header">
+                <button class="back-btn" onclick="showTab('grading')">
+                    <svg width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+                        <path d="M19 12H5M12 19l-7-7 7-7"/>
+                    </svg>
+                </button>
+                <h2 class="grading-title">错题集</h2>
+                <button class="btn btn-outline" onclick="clearMistakes()" style="padding: 8px 16px; font-size: 14px;">
+                    <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+                        <polyline points="3 6 5 6 21 6"></polyline>
+                        <path d="M19 6v14a2 2 0 0 1-2 2H7a2 2 0 0 1-2-2V6m3 0V4a2 2 0 0 1 2-2h4a2 2 0 0 1 2 2v2"></path>
+                    </svg>
+                    清空错题集
+                </button>
+            </div>
+
+            <!-- 错题集统计 -->
+            <div class="stats-grid" style="margin-bottom: 24px;">
+                <div class="stat-card">
+                    <div class="stat-number" id="total-mistakes">0</div>
+                    <div class="stat-label">错题数量</div>
+                </div>
+                <div class="stat-card">
+                    <div class="stat-number" id="term-count">0</div>
+                    <div class="stat-label">积累术语</div>
+                </div>
+                <div class="stat-card">
+                    <div class="stat-number" id="pattern-count">0</div>
+                    <div class="stat-label">积累句式</div>
+                </div>
+            </div>
+
+            <!-- 错题集内容 -->
+            <div class="mistakes-container" id="mistakes-container">
+                <div class="empty-history">暂无错题记录，批改后可将需要加强的内容加入错题集</div>
+            </div>
+
+            <!-- 知识点分类统计 -->
+            <div class="mistakes-stats" id="mistakes-stats" style="display: none; margin-top: 32px;">
+                <h3 class="section-title">知识点统计</h3>
+                <div class="stats-grid">
+                    <div class="stat-card">
+                        <div class="stat-number" id="mistake-terms">0</div>
+                        <div class="stat-label">常见术语</div>
+                    </div>
+                    <div class="stat-card">
+                        <div class="stat-number" id="mistake-patterns">0</div>
+                        <div class="stat-label">高频句式</div>
+                    </div>
+                </div>
             </div>
         </section>
 
@@ -847,7 +910,7 @@ function getEvaluatorPrompt(sourceText, referenceTranslation, userTranslation, l
 
 ## 你的任务
 ${scoringNote}
-请严格使用中文对考生译文进行评分，聚焦"无扣分点"而非追求完美。还要给出你觉得合适的表达。
+请严格使用中文对考生译文进行评分，聚焦"无扣分点"而非追求完美。
 
 【${sourceLang}】
 ${sourceText}
@@ -864,6 +927,17 @@ ${userTranslation}
 3. 在comments中说明主要得分点和扣分点
 4. 在grammar_mistakes中列出具体的语法/用词错误
 5. 在suggestions中给出针对性改进建议
+6. **新增要求：知识点分析** - 在study_points中总结：
+   - **术语积累**：文中出现的专业术语、固定搭配及其正确译法
+   - **句式积累**：值得学习的句型结构、连接方式
+   - **表达亮点**：优秀译文中的精彩表达
+   - **加强建议**：需要重点加强的知识点
+
+【对照分析要求】
+请以对照格式分析用户译文与参考译文的区别，解释参考译文为何更符合CATTI评分标准：
+1. 在comparative_analysis中按段落/句子对照分析
+2. 标注关键差异点：逻辑连接、术语选择、句式结构、格式细节
+3. 解释CATTI评分标准下的扣分/得分原因
 
 【输出格式】
 请以严格JSON格式返回评分结果，不含任何其他内容：
@@ -876,7 +950,21 @@ ${userTranslation}
     "grammar_score": 0-25,
     "vocabulary_score": 0-15,
     "grammar_mistakes": ["错误1", "错误2"],
-    "suggestions": ["改进建议1", "改进建议2"]
+    "suggestions": ["改进建议1", "改进建议2"],
+    "comparative_analysis": [
+        {
+            "user_sentence": "用户原文句子",
+            "ref_sentence": "参考译文句子",
+            "difference": "关键差异",
+            "reason": "为何参考译文更符合CATTI标准"
+        }
+    ],
+    "study_points": {
+        "terminology": ["术语1：正确译法", "术语2：正确译法"],
+        "sentence_patterns": ["句式1：适用场景", "句式2：适用场景"],
+        "highlights": ["亮点表达1", "亮点表达2"],
+        "improvement_areas": ["需要加强：具体知识点"]
+    }
 }`;
 }
 
@@ -1039,10 +1127,11 @@ function showTab(tabName) {
     document.getElementById(tabName).classList.add('active');
     document.querySelectorAll('.nav-btn').forEach(btn => {
         btn.classList.remove('active');
-        if (btn.textContent.includes(tabName === 'home' ? '首页' : tabName === 'practice' ? '练习' : tabName === 'exam' ? '考试' : '批改')) btn.classList.add('active');
+        if (btn.textContent.includes(tabName === 'home' ? '首页' : tabName === 'practice' ? '练习' : tabName === 'exam' ? '考试' : tabName === 'mistakes' ? '错题集' : '批改')) btn.classList.add('active');
     });
     if (tabName === 'home') loadStats();
     else if (tabName === 'grading') loadHistory();
+    else if (tabName === 'mistakes') loadMistakes();
 }
 
 // ==================== 模式切换 ====================
@@ -1451,7 +1540,15 @@ async function submitForGrading(questionNum) {
             grammar_score: Math.min(25, Math.max(0, grading.grammar_score || 17)),
             vocabulary_score: Math.min(15, Math.max(0, grading.vocabulary_score || 10)),
             grammar_mistakes: grading.grammar_mistakes || [],
-            suggestions: grading.suggestions || []
+            suggestions: grading.suggestions || [],
+            reference_translation: questionData.reference_translation,
+            comparative_analysis: grading.comparative_analysis || [],
+            study_points: grading.study_points || {
+                terminology: [],
+                sentence_patterns: [],
+                highlights: [],
+                improvement_areas: []
+            }
         };
 
         questionState[questionNum].result = normalizedGrading;
@@ -1487,6 +1584,9 @@ function displayQuestionGradingResult(questionNum, grading) {
             <div class="score-circle">
                 <span class="score-value">${grading.score}</span>
                 <span class="score-label">分</span>
+            </div>
+            <div class="grading-actions-wrapper">
+                <button class="btn btn-outline" onclick="addToMistakes(${questionNum})">加入错题集</button>
             </div>
         </div>
         <div class="grading-details">
@@ -1532,6 +1632,12 @@ function displayQuestionGradingResult(questionNum, grading) {
             <h4>总体评价</h4>
             <p class="comments-text">${escapeHtml(grading.comments)}</p>
         </div>
+        ${grading.reference_translation ? `
+        <div class="grading-feedback">
+            <h4>Reference<sup>参考译文</sup></h4>
+            <div class="reference-text">${escapeHtml(grading.reference_translation)}</div>
+        </div>
+        ` : ''}
         ${grading.grammar_mistakes && grading.grammar_mistakes.length > 0 ? `
         <div class="grading-feedback">
             <h4>语法错误</h4>
@@ -1546,6 +1652,55 @@ function displayQuestionGradingResult(questionNum, grading) {
             <ul class="suggestions-list">
                 ${grading.suggestions.map(s => '<li>' + escapeHtml(s) + '</li>').join('')}
             </ul>
+        </div>
+        ` : ''}
+        ${grading.study_points && (grading.study_points.terminology?.length > 0 || grading.study_points.sentence_patterns?.length > 0) ? `
+        <div class="grading-feedback">
+            <h4>⚡ 知识点提炼</h4>
+            ${grading.study_points.terminology?.length > 0 ? `
+            <div class="study-points-section">
+                <h5>📌 术语积累</h5>
+                <ul class="study-points-list">
+                    ${grading.study_points.terminology.map(t => '<li>' + escapeHtml(t) + '</li>').join('')}
+                </ul>
+            </div>
+            ` : ''}
+            ${grading.study_points.sentence_patterns?.length > 0 ? `
+            <div class="study-points-section">
+                <h5>📝 句式积累</h5>
+                <ul class="study-points-list">
+                    ${grading.study_points.sentence_patterns.map(p => '<li>' + escapeHtml(p) + '</li>').join('')}
+                </ul>
+            </div>
+            ` : ''}
+        </div>
+        ` : ''}
+        ${grading.comparative_analysis && grading.comparative_analysis.length > 0 ? `
+        <div class="grading-feedback comparative-section">
+            <h4>⚠️ 译文对照分析 (CATTI评分标准)</h4>
+            <div class="comparative-analysis">
+                ${grading.comparative_analysis.map((item, idx) => `
+                <div class="comparative-item">
+                    <div class="comparative-left">
+                        <div class="comparative-label">用户的译文</div>
+                        <p class="comparative-text user-text">${escapeHtml(item.user_sentence)}</p>
+                    </div>
+                    <div class="comparative-right">
+                        <div class="comparative-label">参考译文</div>
+                        <p class="comparative-text ref-text">${escapeHtml(item.ref_sentence)}</p>
+                    </div>
+                    <div class="comparative-explanation">
+                        <div class="explanation-icon">💡</div>
+                        <div class="explanation-content">
+                            <strong class="exp-title">差异点：</strong>
+                            <p class="exp-diff">${escapeHtml(item.difference)}</p>
+                            <strong class="exp-title">为何参考译文更符合CATTI标准：</strong>
+                            <p class="exp-reason">${escapeHtml(item.reason)}</p>
+                        </div>
+                    </div>
+                </div>
+                `).join('')}
+            </div>
         </div>
         ` : ''}
     `;
@@ -1804,18 +1959,23 @@ function loadHistory() {
         if (!container) return;
         const history = JSON.parse(localStorage.getItem('gradingHistory') || '[]');
         if (history.length === 0) { container.innerHTML = '<div class="empty-history">暂无批改记录</div>'; return; }
-        container.innerHTML = history.map((r, index) =>
-            '<div class="history-item" onclick="viewGradingDetail(' + index + ')">' +
+        container.innerHTML = history.map((r, index) => {
+            const isMistake = localStorage.getItem('mistakeIndex_' + index) === 'true';
+            return '<div class="history-item' + (isMistake ? ' mistake-item' : '') + '">' +
             '<div class="history-header">' +
             '<span class="history-topic">' + escapeHtml(r.topic) + '</span>' +
             '<span class="history-score ' + getScoreClass(r.score) + '">' + r.score + '分</span>' +
             '</div>' +
             '<div class="history-meta">' +
             '<span class="history-time">' + formatTime(r.timestamp) + '</span>' +
-            '<span class="view-btn">查看详情</span>' +
+            '<div class="history-actions">' +
+            '<span class="view-btn" onclick="viewGradingDetail(' + index + ')">查看详情</span>' +
+            '<span class="mistake-btn' + (isMistake ? ' active' : '') + '" onclick="toggleMistakeItem(' + index + ')">' + (isMistake ? '已加入' : '加入错题集') + '</span>' +
+            '<span class="delete-btn" onclick="deleteHistoryItem(' + index + ')">删除</span>' +
+            '</div>' +
             '</div>' +
             '</div>'
-        ).join('');
+        }).join('');
     } catch (e) {
         console.error('加载历史记录失败:', e);
     }
@@ -1826,6 +1986,31 @@ function clearHistory() {
         localStorage.removeItem('gradingHistory');
         document.getElementById('grading-history').innerHTML = '<div class="empty-history">暂无批改记录</div>';
         loadStats();
+    }
+}
+
+function deleteHistoryItem(index) {
+    if (confirm('确定要删除这条批改记录吗？')) {
+        const history = JSON.parse(localStorage.getItem('gradingHistory') || '[]');
+        history.splice(index, 1);
+        localStorage.setItem('gradingHistory', JSON.stringify(history));
+
+        // 删除错题标记
+        localStorage.removeItem('mistakeIndex_' + index);
+
+        // 重新索引后续记录的 mistakeIndex
+        history.forEach((_, i) => {
+            const oldKey = 'mistakeIndex_' + (i + 1);
+            const oldVal = localStorage.getItem(oldKey);
+            if (oldVal) {
+                localStorage.removeItem(oldKey);
+                localStorage.setItem('mistakeIndex_' + i, oldVal);
+            }
+        });
+
+        loadHistory();
+        loadStats();
+        showStatus('记录已删除', 'success');
     }
 }
 
@@ -1939,6 +2124,354 @@ function closeGradingDetail() {
     document.getElementById('grading-detail-modal').style.display = 'none';
 }
 
+// ==================== 错题集相关函数 ====================
+
+function addToMistakes(questionNum) {
+    const questionData = questionState[questionNum];
+    if (!questionData || !questionData.graded || !questionData.result) {
+        showStatus('请先完成批改', 'error');
+        return;
+    }
+
+    // 获取题目信息
+    const grading = questionData.result;
+    const history = JSON.parse(localStorage.getItem('gradingHistory') || '[]');
+
+    // 查找对应的历史记录索引
+    const recordIndex = history.findIndex(h =>
+        h.source_text === questionData.data.source_text &&
+        h.user_translation === document.getElementById(getTargetTextId(questionNum)).value
+    );
+
+    if (recordIndex !== -1) {
+        const record = history[recordIndex];
+        localStorage.setItem('mistakeIndex_' + recordIndex, 'true');
+
+        // 如果 study_points 为空，尝试从 reference_translation 提取
+        if (!grading.study_points ||
+            (!grading.study_points.terminology?.length && !grading.study_points.sentence_patterns?.length)) {
+            showStatus('正在从参考译文中自动提取知识点...', 'success');
+            // 简单的关键字提取（实际应用中可以使用更复杂的NLP方法）
+            const studyPoints = extractStudyPointsFromReference(grading.reference_translation || '');
+            grading.study_points = studyPoints;
+
+            // 更新历史记录
+            history[index].grading.study_points = studyPoints;
+            localStorage.setItem('gradingHistory', JSON.stringify(history));
+
+            setTimeout(() => {
+                loadMistakes();
+                showStatus('已加入错题集（已自动提取知识点）', 'success');
+            }, 800);
+        } else {
+            loadMistakes();
+            showStatus('已加入错题集', 'success');
+        }
+    } else {
+        showStatus('未能找到对应的批改记录', 'error');
+    }
+}
+
+// 从参考译文中自动提取知识点
+function extractStudyPointsFromReference(referenceText) {
+    if (!referenceText) return { terminology: [], sentence_patterns: [], highlights: [], improvement_areas: [] };
+
+    const studyPoints = {
+        terminology: [],
+        sentence_patterns: [],
+        highlights: [],
+        improvement_areas: []
+    };
+
+    // 简单的中文术语识别（返回+括号内容）
+    const termPattern = /【([^】]+)】|《([^》]+)》|“([^”]+)”/g;
+    const terms = [];
+    let match;
+    while ((match = termPattern.exec(referenceText)) !== null) {
+        const term = match[1] || match[2] || match[3];
+        if (term && term.length > 1 && !terms.includes(term)) {
+            terms.push(term);
+        }
+    }
+
+    // 简单的句式识别（包含连接词的句子）
+    const connectors = ['此外', '同时', '然而', '因此', '不仅', '而且', '虽然', '但是', '如果', '就', '即使', '也', '正在'];
+    const sentences = referenceText.match(/[^。！？]+[。！？]/g) || [referenceText];
+
+    const patterns = [];
+    sentences.forEach(sentence => {
+        connectors.forEach(connector => {
+            if (sentence.includes(connector) && !patterns.includes(connector)) {
+                patterns.push(`使用"${connector}"连接两个分句`);
+            }
+        });
+    });
+
+    // 提取超过15字的长句作为学习亮点
+    const highlights = sentences.filter(s => s.length > 15 && s.trim().length > 0).slice(0, 3);
+
+    studyPoints.terminology = terms.slice(0, 5);
+    studyPoints.sentence_patterns = patterns.slice(0, 5);
+    studyPoints.highlights = highlights;
+
+    return studyPoints;
+}
+
+function loadMistakes() {
+    try {
+        const container = document.getElementById('mistakes-container');
+        if (!container) return;
+
+        const history = JSON.parse(localStorage.getItem('gradingHistory') || '[]');
+        const mistakes = [];
+
+        history.forEach((record, index) => {
+            if (localStorage.getItem('mistakeIndex_' + index) === 'true') {
+                mistakes.push({ index, ...record });
+            }
+        });
+
+        if (mistakes.length === 0) {
+            container.innerHTML = '<div class="empty-history">暂无错题记录，批改后可将需要加强的内容加入错题集</div>';
+            document.getElementById('mistakes-stats').style.display = 'none';
+        } else {
+            container.innerHTML = mistakes.map((m, i) => generateMistakeItemHTML(m, i)).join('');
+            document.getElementById('mistakes-stats').style.display = 'block';
+            updateMistakesStats(mistakes);
+        }
+
+        // 更新统计
+        document.getElementById('total-mistakes').textContent = mistakes.length;
+
+        // 统计术语和句式数量
+        let totalTerms = 0;
+        let totalPatterns = 0;
+        mistakes.forEach(m => {
+            const studyPoints = m.grading?.study_points;
+            if (studyPoints?.terminology) totalTerms += studyPoints.terminology.length;
+            if (studyPoints?.sentence_patterns) totalPatterns += studyPoints.sentence_patterns.length;
+        });
+        document.getElementById('term-count').textContent = totalTerms;
+        document.getElementById('pattern-count').textContent = totalPatterns;
+
+    } catch (e) {
+        console.error('加载错题集失败:', e);
+    }
+}
+
+function generateMistakeItemHTML(mistake, displayIndex) {
+    const grading = mistake.grading || {};
+    const studyPoints = grading.study_points || {};
+
+    let html = '<div class="mistake-item-card">' +
+        '<div class="mistake-header">' +
+        '<div class="mistake-title">' +
+        '<span class="mistake-topic">' + escapeHtml(mistake.topic) + '</span>' +
+        '<span class="mistake-score ' + getScoreClass(mistake.score) + '">' + mistake.score + '分</span>' +
+        '</div>' +
+        '<div class="mistake-meta">' +
+        '<span class="mistake-time">' + formatTime(mistake.timestamp) + '</span>' +
+        '<span class="view-btn" onclick="viewGradingDetail(' + mistake.index + ')">查看原文</span>' +
+        '<span class="view-btn" onclick="viewMistakeDetail(' + mistake.index + ')">知识点</span>' +
+        '<span class="mistake-btn active" onclick="toggleMistakeItem(' + mistake.index + ')">取消收藏</span>' +
+        '</div>' +
+        '</div>';
+
+    // 知识点卡片
+    const studyPointsHtml = [];
+
+    if (studyPoints.terminology && studyPoints.terminology.length > 0) {
+        studyPointsHtml.push(
+            '<div class="mistake-section">' +
+            '<h4 class="section-icon">📌 术语积累</h4>' +
+            '<ul class="study-list">' +
+            studyPoints.terminology.map(t => '<li>' + escapeHtml(t) + '</li>').join('') +
+            '</ul>' +
+            '</div>'
+        );
+    }
+
+    if (studyPoints.sentence_patterns && studyPoints.sentence_patterns.length > 0) {
+        studyPointsHtml.push(
+            '<div class="mistake-section">' +
+            '<h4 class="section-icon">📝 句式积累</h4>' +
+            '<ul class="study-list">' +
+            studyPoints.sentence_patterns.map(p => '<li>' + escapeHtml(p) + '</li>').join('') +
+            '</ul>' +
+            '</div>'
+        );
+    }
+
+    if (studyPoints.highlights && studyPoints.highlights.length > 0) {
+        studyPointsHtml.push(
+            '<div class="mistake-section">' +
+            '<h4 class="section-icon">✨ 表达亮点</h4>' +
+            '<ul class="study-list">' +
+            studyPoints.highlights.map(h => '<li>' + escapeHtml(h) + '</li>').join('') +
+            '</ul>' +
+            '</div>'
+        );
+    }
+
+    if (studyPoints.improvement_areas && studyPoints.improvement_areas.length > 0) {
+        studyPointsHtml.push(
+            '<div class="mistake-section mistake-highlight">' +
+            '<h4 class="section-icon">⚠️ 加强建议</h4>' +
+            '<ul class="study-list">' +
+            studyPoints.improvement_areas.map(a => '<li>' + escapeHtml(a) + '</li>').join('') +
+            '</ul>' +
+            '</div>'
+        );
+    }
+
+    // 添加对照分析
+    if (grading.comparative_analysis && grading.comparative_analysis.length > 0) {
+        studyPointsHtml.push(
+            '<div class="mistake-section mistake-highlight">' +
+            '<h4 class="section-icon">🇺🇸 中英对照分析</h4>' +
+            '<div class="comparative-analysis-small">' +
+            grading.comparative_analysis.map((item, idx) => `
+            <div class="comparative-item-small">
+                <div class="comparative-left-small">
+                    <p class="comparative-text-small user-text-small">${escapeHtml(item.user_sentence)}</p>
+                </div>
+                <div class="comparative-right-small">
+                    <p class="comparative-text-small ref-text-small">${escapeHtml(item.ref_sentence)}</p>
+                </div>
+                <div class="comparative-exp-small">
+                    <span class="exp-icon-small">💡</span>
+                    <p class="exp-text-small">${escapeHtml(item.difference)}</p>
+                </div>
+            </div>
+            `).join('') +
+            '</div>' +
+            '</div>'
+        );
+    }
+
+    if (studyPointsHtml.length > 0) {
+        html += '<div class="mistake-body">' + studyPointsHtml.join('') + '</div>';
+    } else {
+        html += '<div class="mistake-body">' +
+            '<div class="empty-tip">本次练习暂无详细知识点分析，请确保 AI 配置正确</div>' +
+            '</div>';
+    }
+
+    html += '</div>';
+    return html;
+}
+
+function viewMistakeDetail(index) {
+    // 复用批改详情模态框，但显示错题知识点
+    const history = JSON.parse(localStorage.getItem('gradingHistory') || '[]');
+    const record = history[index];
+    if (!record) return;
+
+    const grading = record.grading || {};
+    const studyPoints = grading.study_points || {};
+
+    let detailContent = '<div class="detail-header">' +
+        '<h4>' + escapeHtml(record.topic) + ' - 错题知识点</h4>' +
+        '<span class="detail-time">' + formatTime(record.timestamp) + '</span>' +
+        '</div>';
+
+    // 知识点表格
+    detailContent += '<div class="mistakes-notebook">';
+
+    if (studyPoints.terminology && studyPoints.terminology.length > 0) {
+        detailContent += '<div class="notebook-section">' +
+            '<h4>📌 术语积累</h4>' +
+            '<table class="notebook-table">' +
+            studyPoints.terminology.map((term, i) => '<tr><td class="notebook-term">' + escapeHtml(term) + '</td></tr>').join('') +
+            '</table>' +
+            '</div>';
+    }
+
+    if (studyPoints.sentence_patterns && studyPoints.sentence_patterns.length > 0) {
+        detailContent += '<div class="notebook-section">' +
+            '<h4>📝 句式积累</h4>' +
+            '<table class="notebook-table">' +
+            studyPoints.sentence_patterns.map((pattern, i) => '<tr><td class="notebook-pattern">' + escapeHtml(pattern) + '</td></tr>').join('') +
+            '</table>' +
+            '</div>';
+    }
+
+    if (studyPoints.highlights && studyPoints.highlights.length > 0) {
+        detailContent += '<div class="notebook-section">' +
+            '<h4>✨ 表达亮点</h4>' +
+            '<table class="notebook-table">' +
+            studyPoints.highlights.map((highlight, i) => '<tr><td class="notebook-highlight">' + escapeHtml(highlight) + '</td></tr>').join('') +
+            '</table>' +
+            '</div>';
+    }
+
+    if (studyPoints.improvement_areas && studyPoints.improvement_areas.length > 0) {
+        detailContent += '<div class="notebook-section notebook-highlight">' +
+            '<h4>⚠️ 加强建议</h4>' +
+            '<table class="notebook-table">' +
+            studyPoints.improvement_areas.map((area, i) => '<tr><td class="notebook-area">' + escapeHtml(area) + '</td></tr>').join('') +
+            '</table>' +
+            '</div>';
+    }
+
+    detailContent += '</div>';
+
+    const modalContent = document.getElementById('grading-detail-content');
+    modalContent.innerHTML = detailContent;
+    document.getElementById('grading-detail-modal').style.display = 'flex';
+}
+
+function updateMistakesStats(mistakes) {
+    const stats = {
+        terminology: {},
+        patterns: {}
+    };
+
+    mistakes.forEach(m => {
+        const studyPoints = m.grading?.study_points;
+        if (studyPoints?.terminology) {
+            studyPoints.terminology.forEach(term => {
+                // 提取术语关键词作为分类
+                const key = term.split('：')[0] || term.split(': ')[0] || '通用';
+                stats.terminology[key] = (stats.terminology[key] || 0) + 1;
+            });
+        }
+        if (studyPoints?.sentence_patterns) {
+            studyPoints.sentence_patterns.forEach(pattern => {
+                const key = pattern.split('：')[0] || pattern.split(': ')[0] || '通用';
+                stats.patterns[key] = (stats.patterns[key] || 0) + 1;
+            });
+        }
+    });
+
+    document.getElementById('mistake-terms').textContent = Object.keys(stats.terminology).length;
+    document.getElementById('mistake-patterns').textContent = Object.keys(stats.patterns).length;
+}
+
+function toggleMistakeItem(index) {
+    const current = localStorage.getItem('mistakeIndex_' + index);
+    const newValue = current === 'true' ? 'false' : 'true';
+    localStorage.setItem('mistakeIndex_' + index, newValue);
+
+    loadHistory(); // 刷新历史列表
+    loadMistakes(); // 刷新错题集
+
+    const isMistake = newValue === 'true';
+    showStatus(isMistake ? '已加入错题集' : '已从错题集移除', 'success');
+}
+
+function clearMistakes() {
+    if (confirm('确定要清空所有错题集内容吗？')) {
+        const history = JSON.parse(localStorage.getItem('gradingHistory') || '[]');
+        history.forEach((_, index) => {
+            localStorage.removeItem('mistakeIndex_' + index);
+        });
+        loadMistakes();
+        loadHistory();
+        showStatus('错题集已清空', 'success');
+    }
+}
+
 // ==================== 工具函数 ====================
 
 function escapeHtml(text) {
@@ -1980,6 +2513,7 @@ document.addEventListener('DOMContentLoaded', () => {
     loadConfig();
     loadStats();
     loadHistory();
+    loadMistakes();
     startTimer();
 });
     </script>
