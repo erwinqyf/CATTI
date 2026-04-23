@@ -2292,6 +2292,33 @@ function generateMistakeItemHTML(mistake, displayIndex) {
         '</div>' +
         '</div>';
 
+    // 三栏对比：原文 - 参考译文 - 用户译文
+    let comparisonHtml = [];
+    if (mistake.source_text) {
+        comparisonHtml.push(
+            '<div class="mistake-section mistake-comparison">' +
+            '<h4 class="section-icon">📝 三栏对比 (原文)</h4>' +
+            '<div class="comparison-text comparison-source">' + escapeHtml(mistake.source_text) + '</div>' +
+            '</div>'
+        );
+    }
+    if (mistake.reference_translation) {
+        comparisonHtml.push(
+            '<div class="mistake-section mistake-comparison">' +
+            '<h4 class="section-icon">/reference 指参考译文</h4>' +
+            '<div class="comparison-text comparison-reference">' + escapeHtml(mistake.reference_translation) + '</div>' +
+            '</div>'
+        );
+    }
+    if (mistake.user_translation) {
+        comparisonHtml.push(
+            '<div class="mistake-section mistake-comparison">' +
+            '<h4 class="section-icon"> yours 指你的译文</h4>' +
+            '<div class="comparison-text comparison-user">' + escapeHtml(mistake.user_translation) + '</div>' +
+            '</div>'
+        );
+    }
+
     // 知识点卡片
     let studyPointsHtml = [];
 

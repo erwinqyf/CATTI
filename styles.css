@@ -1320,6 +1320,57 @@ body {
     line-height: 1.4;
 }
 
+/* 错题集三栏对比样式 */
+.mistake-comparison {
+    background: #f9fafb;
+    border-radius: 16px;
+    padding: 20px;
+    margin-bottom: 16px;
+}
+
+.mistake-comparison h4 {
+    font-size: 13px;
+    font-weight: 600;
+    color: #666;
+    margin-bottom: 12px;
+    display: flex;
+    align-items: center;
+    gap: 8px;
+}
+
+.comparison-text {
+    font-size: 15px;
+    line-height: 1.8;
+    color: #333;
+    white-space: pre-wrap;
+    word-wrap: break-word;
+}
+
+.comparison-source {
+    background: #fff;
+    border: 1px solid #e5e7eb;
+    padding: 16px;
+    border-radius: 12px;
+    color: #1f2937;
+}
+
+.comparison-reference {
+    background: linear-gradient(135deg, #f0fdf4 0%, #dcfce7 100%);
+    border: 1px solid #86efac;
+    padding: 16px;
+    border-radius: 12px;
+    color: #15803d;
+    font-weight: 500;
+}
+
+.comparison-user {
+    background: linear-gradient(135deg, #fef2f2 0%, #fee2e2 100%);
+    border: 1px solid #fca5a5;
+    padding: 16px;
+    border-radius: 12px;
+    color: #b91c1c;
+}
+
 .mistake-item.mistake-item-card {
     border-left: 4px solid #ff3b30;
 }
