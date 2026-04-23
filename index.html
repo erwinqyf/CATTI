@@ -2034,7 +2034,15 @@ function saveToHistory(topic, score, sourceText, referenceTranslation, userTrans
             grammar_score: 0,
             vocabulary_score: 0,
             grammar_mistakes: [],
-            suggestions: []
+            suggestions: [],
+            reference_translation: referenceTranslation || '',
+            comparative_analysis: [],
+            study_points: {
+                terminology: [],
+                sentence_patterns: [],
+                highlights: [],
+                improvement_areas: []
+            }
         },
         question_num: questionNum
     };
