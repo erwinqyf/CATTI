@@ -2233,13 +2233,18 @@ function loadMistakes() {
         if (!container) return;
 
         const history = JSON.parse(localStorage.getItem('gradingHistory') || '[]');
+        console.log('History loaded:', history);
         const mistakes = [];
 
         history.forEach((record, index) => {
-            if (localStorage.getItem('mistakeIndex_' + index) === 'true') {
+            const isMistake = localStorage.getItem('mistakeIndex_' + index) === 'true';
+            console.log('Record', index, 'isMistake:', isMistake, '- mistakeIndex value:', localStorage.getItem('mistakeIndex_' + index));
+            if (isMistake) {
                 mistakes.push({ index, ...record });
             }
         });
+
+        console.log('Mistakes found:', mistakes.length);
 
         if (mistakes.length === 0) {
             container.innerHTML = '<div class="empty-history">暂无错题记录，批改后可将需要加强的内容加入错题集</div>';
@@ -2485,8 +2490,11 @@ function updateMistakesStats(mistakes) {
 }
 
 function toggleMistakeItem(index) {
+    console.log('toggleMistakeItem called with index:', index);
     const current = localStorage.getItem('mistakeIndex_' + index);
+    console.log('Current value:', current);
     const newValue = current === 'true' ? 'false' : 'true';
+    console.log('New value:', newValue);
     localStorage.setItem('mistakeIndex_' + index, newValue);
 
     loadHistory(); // 刷新历史列表
