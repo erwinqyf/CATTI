@@ -1,0 +1,9 @@
+{
+  "permissions": {
+    "allow": [
+      "Bash(python -m http.server 8080)",
+      "Bash(start \"\" \"c:\\\\Users\\\\33211\\\\Desktop\\\\catti考试\\\\index.html\")",
+      "Read(//c//**)"
+    ]
+  }
+}
