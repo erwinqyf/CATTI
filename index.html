@@ -2293,7 +2293,7 @@ function generateMistakeItemHTML(mistake, displayIndex) {
         '</div>';
 
     // 知识点卡片
-    const studyPointsHtml = [];
+    let studyPointsHtml = [];
 
     if (studyPoints.terminology && studyPoints.terminology.length > 0) {
         studyPointsHtml.push(
