@@ -1346,15 +1346,23 @@ body {
     word-wrap: break-word;
 }
 
-.comparison-source {
-    background: #fff;
+/* 三栏横向对比 */
+.mistake-comparison-container {
+    display: grid;
+    grid-template-columns: 1fr 1fr 1fr;
+    gap: 16px;
+    margin-top: 16px;
+}
+
+.mistake-comparison-container .comparison-source {
+    background: #f3f4f6;
     border: 1px solid #e5e7eb;
     padding: 16px;
     border-radius: 12px;
-    color: #1f2937;
+    color: #374151;
 }
 
-.comparison-reference {
+.mistake-comparison-container .comparison-reference {
     background: linear-gradient(135deg, #f0fdf4 0%, #dcfce7 100%);
     border: 1px solid #86efac;
     padding: 16px;
@@ -1363,7 +1371,7 @@ body {
     font-weight: 500;
 }
 
-.comparison-user {
+.mistake-comparison-container .comparison-user {
     background: linear-gradient(135deg, #fef2f2 0%, #fee2e2 100%);
     border: 1px solid #fca5a5;
     padding: 16px;

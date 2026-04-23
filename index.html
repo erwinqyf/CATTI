@@ -2292,29 +2292,17 @@ function generateMistakeItemHTML(mistake, displayIndex) {
         '</div>' +
         '</div>';
 
-    // 三栏对比：原文 - 参考译文 - 用户译文
+    // 三栏对比：原文 - 参考译文 - 用户译文（横向）
     let comparisonHtml = [];
-    if (mistake.source_text) {
+    if (mistake.source_text || mistake.reference_translation || mistake.user_translation) {
         comparisonHtml.push(
             '<div class="mistake-section mistake-comparison">' +
-            '<h4 class="section-icon">📝 三栏对比 (原文)</h4>' +
-            '<div class="comparison-text comparison-source">' + escapeHtml(mistake.source_text) + '</div>' +
-            '</div>'
-        );
-    }
-    if (mistake.reference_translation) {
-        comparisonHtml.push(
-            '<div class="mistake-section mistake-comparison">' +
-            '<h4 class="section-icon">/reference 指参考译文</h4>' +
-            '<div class="comparison-text comparison-reference">' + escapeHtml(mistake.reference_translation) + '</div>' +
-            '</div>'
-        );
-    }
-    if (mistake.user_translation) {
-        comparisonHtml.push(
-            '<div class="mistake-section mistake-comparison">' +
-            '<h4 class="section-icon"> yours 指你的译文</h4>' +
-            '<div class="comparison-text comparison-user">' + escapeHtml(mistake.user_translation) + '</div>' +
+            '<h4 class="section-icon">📝 三栏对比</h4>' +
+            '<div class="mistake-comparison-container">' +
+            (mistake.source_text ? '<div class="comparison-text comparison-source"><strong>原文</strong><br>' + escapeHtml(mistake.source_text) + '</div>' : '') +
+            (mistake.reference_translation ? '<div class="comparison-text comparison-reference"><strong>参考译文</strong><br>' + escapeHtml(mistake.reference_translation) + '</div>' : '') +
+            (mistake.user_translation ? '<div class="comparison-text comparison-user"><strong>你的译文</strong><br>' + escapeHtml(mistake.user_translation) + '</div>' : '') +
+            '</div>' +
             '</div>'
         );
     }
