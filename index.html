@@ -1527,6 +1527,7 @@ async function submitForGrading(questionNum) {
         const jsonMatch = response.match(/\{[\s\S]*\}/);
         if (jsonMatch) {
             grading = JSON.parse(jsonMatch[0]);
+            console.log('AI 返回的批改数据:', grading);
         } else {
             throw new Error('无法解析 AI 返回的批改格式');
         }
@@ -2356,6 +2357,32 @@ function generateMistakeItemHTML(mistake, displayIndex) {
             '</div>' +
             '</div>'
         );
+    }
+
+    // 优先显示语法错误和改进建议（如果有）
+    if ((grading.grammar_mistakes && grading.grammar_mistakes.length > 0) || (grading.suggestions && grading.suggestions.length > 0)) {
+        const analysisHtml = [];
+        if (grading.grammar_mistakes && grading.grammar_mistakes.length > 0) {
+            analysisHtml.push(
+                '<div class="mistake-section mistake-highlight">' +
+                '<h4 class="section-icon">⚠️ 语法错误</h4>' +
+                '<ul class="mistakes-list">' +
+                grading.grammar_mistakes.map(m => '<li>' + escapeHtml(m) + '</li>').join('') +
+                '</ul>' +
+                '</div>'
+            );
+        }
+        if (grading.suggestions && grading.suggestions.length > 0) {
+            analysisHtml.push(
+                '<div class="mistake-section mistake-highlight">' +
+                '<h4 class="section-icon">🎯 提升建议</h4>' +
+                '<ul class="suggestions-list">' +
+                grading.suggestions.map(s => '<li>' + escapeHtml(s) + '</li>').join('') +
+                '</ul>' +
+                '</div>'
+            );
+        }
+        studyPointsHtml = analysisHtml.concat(studyPointsHtml);
     }
 
     if (studyPointsHtml.length > 0) {
