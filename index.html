@@ -2166,7 +2166,7 @@ function addToMistakes(questionNum) {
             grading.study_points = studyPoints;
 
             // 更新历史记录
-            history[index].grading.study_points = studyPoints;
+            history[recordIndex].grading.study_points = studyPoints;
             localStorage.setItem('gradingHistory', JSON.stringify(history));
 
             setTimeout(() => {
