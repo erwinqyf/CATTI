@@ -751,9 +751,10 @@ const API_PROVIDERS = {
         url: 'https://api.deepseek.com/v1/chat/completions',
         placeholder: 'sk-...',
         models: [
-            { value: 'deepseek-chat', label: 'deepseek-chat' },
-            { value: 'deepseek-reasoner', label: 'deepseek-reasoner' }
-        ]
+            { value: 'deepseek-v4-flash', label: 'deepseek-v4-flash (超高性能)' },
+            { value: 'deepseek-v4-pro', label: 'deepseek-v4-pro (超强推理)' }
+        ],
+        thinkingMode: true  // DeepSeek 支持 thinking mode
     },
     zhipu: {
         name: '智谱 AI',
@@ -983,6 +984,7 @@ function updateProviderConfig() {
     const provider = getProvider();
     const placeholder = API_PROVIDERS[provider]?.placeholder || 'sk-...';
     const models = API_PROVIDERS[provider]?.models || [];
+    const hasThinkingMode = API_PROVIDERS[provider]?.thinkingMode || false;
 
     document.getElementById('api-key-modal').placeholder = placeholder;
 
@@ -1004,6 +1006,65 @@ function updateProviderConfig() {
     });
 
     modelSelect.appendChild(group);
+
+    // Thinking Mode 配置区域
+    let thinkingContainer = document.getElementById('thinking-mode-config');
+    if (!thinkingContainer) {
+        thinkingContainer = document.createElement('div');
+        thinkingContainer.id = 'thinking-mode-config';
+        thinkingContainer.className = 'form-group';
+
+        // 在模型选择后插入 thinking mode 配置
+        const modelLabel = document.querySelector('#config-modal label[for="model-name-modal"]');
+        if (modelLabel) {
+            modelLabel.after(thinkingContainer);
+        }
+    }
+
+    if (hasThinkingMode) {
+        thinkingContainer.style.display = 'block';
+        thinkingContainer.innerHTML = `
+            <div style="display: flex; align-items: center; gap: 10px; margin-bottom: 8px;">
+                <input type="checkbox" id="thinking-mode-enable" onchange="updateThinkingModeOptions()">
+                <label for="thinking-mode-enable" style="margin: 0; cursor: pointer;">启用 Thinking Mode (深度推理)</label>
+            </div>
+            <div id="thinking-effort-container" style="margin-left: 28px; display: none;">
+                <label for="thinking-effort" style="display: block; margin-bottom: 4px; font-size: 14px;">推理强度:</label>
+                <select id="thinking-effort" class="select-input" style="width: 100%;">
+                    <option value="low">Low (低强度 - 快速)</option>
+                    <option value="medium" selected>Medium (中等 - 平衡)</option>
+                    <option value="high">High (高强度 - 深度思考)</option>
+                </select>
+            </div>
+            <p class="modal-desc" style="font-size: 12px; color: #666; margin-top: 8px;">
+                启用后模型会进行更深入的思考，适合复杂推理任务，但响应时间会增加
+            </p>
+        `;
+
+        // 加载已保存的设置
+        const enableThinking = localStorage.getItem('enableThinking') === 'true';
+        const effort = localStorage.getItem('thinkingEffort') || 'medium';
+
+        const enableCheckbox = document.getElementById('thinking-mode-enable');
+        const effortContainer = document.getElementById('thinking-effort-container');
+        const effortSelect = document.getElementById('thinking-effort');
+
+        if (enableCheckbox) enableCheckbox.checked = enableThinking;
+        if (effortContainer) effortContainer.style.display = enableThinking ? 'block' : 'none';
+        if (effortSelect) effortSelect.value = effort;
+    } else {
+        thinkingContainer.style.display = 'none';
+        thinkingContainer.innerHTML = '';
+    }
+}
+
+// 更新 Thinking Mode 推理强度显示
+function updateThinkingModeOptions() {
+    const enableCheckbox = document.getElementById('thinking-mode-enable');
+    const effortContainer = document.getElementById('thinking-effort-container');
+    if (enableCheckbox && effortContainer) {
+        effortContainer.style.display = enableCheckbox.checked ? 'block' : 'none';
+    }
 }
 
 // ==================== 配置相关函数 ====================
@@ -1049,6 +1110,20 @@ function loadConfig() {
     const modalModelName = document.getElementById('model-name-modal');
     if (modalApiKey) modalApiKey.value = apiKey;
     if (modalModelName) modalModelName.value = modelName;
+
+    // 如果是 DeepSeek，加载 thinking mode 状态
+    if (provider === 'deepseek') {
+        const enableCheckbox = document.getElementById('thinking-mode-enable');
+        const effortSelect = document.getElementById('thinking-effort');
+        const enableThinking = localStorage.getItem('enableThinking') === 'true';
+        const effort = localStorage.getItem('thinkingEffort') || 'medium';
+
+        if (enableCheckbox) {
+            enableCheckbox.checked = enableThinking;
+            document.getElementById('thinking-effort-container').style.display = enableThinking ? 'block' : 'none';
+        }
+        if (effortSelect) effortSelect.value = effort;
+    }
 }
 
 function toggleApiKeyVisibility() {
@@ -1066,11 +1141,24 @@ function saveConfig() {
         return;
     }
 
+    // 保存 basic config
     localStorage.setItem('apiProvider', provider);
     localStorage.setItem('apiKey', apiKey);
     localStorage.setItem('modelName', modelName);
 
-    const providerConfig = API_PROVIDERS[provider] || API_PROVIDERS.aliyun;
+    // 保存 thinking mode config (仅 DeepSeek)
+    const providerConfig = API_PROVIDERS[provider] || {};
+    if (providerConfig.thinkingMode) {
+        const enableThinking = document.getElementById('thinking-mode-enable');
+        const thinkingEffort = document.getElementById('thinking-effort');
+        if (enableThinking) {
+            localStorage.setItem('enableThinking', enableThinking.checked);
+        }
+        if (thinkingEffort) {
+            localStorage.setItem('thinkingEffort', thinkingEffort.value);
+        }
+    }
+
     const apiUrl = providerConfig.url;
 
     const statusEl = document.getElementById('config-status');
@@ -1287,18 +1375,35 @@ async function callAPI(messages, temperature = 0.7) {
 
     if (!apiKey) throw new Error('请先配置 API Key');
 
+    // 检查是否启用 thinking mode（仅 DeepSeek 支持）
+    const providerConfig = API_PROVIDERS[provider] || {};
+    const enableThinking = localStorage.getItem('enableThinking') === 'true' && providerConfig.thinkingMode;
+
     try {
+        const requestBody = {
+            model: modelName,
+            messages: messages,
+            temperature: temperature
+        };
+
+        // DeepSeek thinking mode 配置
+        if (enableThinking) {
+            const reasoningEffort = localStorage.getItem('thinkingEffort') || 'medium';
+            requestBody.extra_body = {
+                thinking: {
+                    type: 'enabled'
+                },
+                reasoning_effort: reasoningEffort
+            };
+        }
+
         const response = await fetch(apiUrl, {
             method: 'POST',
             headers: {
                 'Authorization': 'Bearer ' + apiKey,
                 'Content-Type': 'application/json'
             },
-            body: JSON.stringify({
-                model: modelName,
-                messages: messages,
-                temperature: temperature
-            })
+            body: JSON.stringify(requestBody)
         });
 
         const data = await response.json();
