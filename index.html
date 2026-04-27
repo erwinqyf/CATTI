@@ -2377,13 +2377,87 @@ function loadMistakes() {
     } catch (e) {
         console.error('加载错题集失败:', e);
     }
+
+    // 初始化标记交互
+    initMarksInteraction();
+}
+
+// 获取错题标记数据
+function getMistakeMarks(mistakeIndex) {
+    try {
+        const marks = localStorage.getItem('mistakeMarks_' + mistakeIndex);
+        return marks ? JSON.parse(marks) : { source: [], reference: [], user: [] };
+    } catch (e) {
+        return { source: [], reference: [], user: [] };
+    }
+}
+
+// 保存错题标记
+function saveMistakeMarks(mistakeIndex, marks) {
+    localStorage.setItem('mistakeMarks_' + mistakeIndex, JSON.stringify(marks));
+}
+
+// 渲染带标记的文本
+function renderMarkedText(text, marks) {
+    if (!marks || marks.length === 0) {
+        return escapeHtml(text);
+    }
+
+    // 使用 text 字段进行标记，而不是 start/end 位置
+    let result = escapeHtml(text);
+
+    // 按标记长度排序（长的先处理，避免位置偏移）
+    const sortedMarks = [...marks].sort((a, b) => (b.end - b.start) - (a.end - a.start));
+
+    sortedMarks.forEach(mark => {
+        if (!mark.text) return;
+
+        const markedText = escapeHtml(mark.text);
+        const highlightClass = mark.type ? 'highlight-' + mark.type : 'highlight-text';
+        const textColor = mark.color ? 'text-' + mark.color : '';
+        const formattedMark = '<span class="' + highlightClass + ' ' + textColor + ' mark-item" data-index="' + mark.index + '">' + markedText + '</span>';
+
+        // 使用正则替换第一个匹配项
+        const regex = new RegExp(escapeRegExp(escapeHtml(mark.text)), '');
+        result = result.replace(regex, formattedMark);
+    });
+
+    return result;
+}
+
+// 存储原始文本，用于标记
+function storeOriginalText(mistakeIndex, column, text) {
+    const key = 'mistakeOriginalText_' + mistakeIndex + '_' + column;
+    localStorage.setItem(key, text);
+}
+
+// 获取原始文本
+function getOriginalText(mistakeIndex, column) {
+    const key = 'mistakeOriginalText_' + mistakeIndex + '_' + column;
+    return localStorage.getItem(key) || '';
+}
+
+// 初始化标记交互 - 当用户点击容器时保存状态
+function initMarksInteraction() {
+    document.querySelectorAll('.marks-container').forEach(container => {
+        container.addEventListener('mouseup', function(e) {
+            // 保存选中的文本（在失去焦点前）
+            saveSelectedText();
+
+            const selection = window.getSelection();
+            if (selection.toString().length === 0) return;
+
+            // 保存当前选中状态
+            currentMarkMistakeIndex = this.dataset.index;
+            currentMarkColumn = this.dataset.column;
+        });
+    });
 }
 
 function generateMistakeItemHTML(mistake, displayIndex) {
-    const grading = mistake.grading || {};
-    const studyPoints = grading.study_points || {};
+    const marks = getMistakeMarks(mistake.index);
 
-    let html = '<div class="mistake-item-card">' +
+    let html = '<div class="mistake-item-card" data-index="' + mistake.index + '">' +
         '<div class="mistake-header">' +
         '<div class="mistake-title">' +
         '<span class="mistake-topic">' + escapeHtml(mistake.topic) + '</span>' +
@@ -2397,126 +2471,30 @@ function generateMistakeItemHTML(mistake, displayIndex) {
         '</div>' +
         '</div>';
 
-    // 三栏对比：原文 - 参考译文 - 用户译文（横向）
-    let comparisonHtml = [];
-    if (mistake.source_text || mistake.reference_translation || mistake.user_translation) {
-        comparisonHtml.push(
-            '<div class="mistake-section mistake-comparison">' +
-            '<h4 class="section-icon">📝 三栏对比</h4>' +
-            '<div class="mistake-comparison-container">' +
-            (mistake.source_text ? '<div class="comparison-text comparison-source"><strong>原文</strong><br>' + escapeHtml(mistake.source_text) + '</div>' : '') +
-            (mistake.reference_translation ? '<div class="comparison-text comparison-reference"><strong>参考译文</strong><br>' + escapeHtml(mistake.reference_translation) + '</div>' : '') +
-            (mistake.user_translation ? '<div class="comparison-text comparison-user"><strong>你的译文</strong><br>' + escapeHtml(mistake.user_translation) + '</div>' : '') +
-            '</div>' +
-            '</div>'
-        );
-    }
+    // 简化错题集：只显示三栏对比（原文-参考译文-用户译文）
+    let comparisonHtml = '<div class="mistake-comparison-box">' +
+        '<div class="mistake-comparison-header">📝 三栏对照练习</div>' +
+        '<div class="mistake-marker-toolbar">' +
+        '<span class="toolbar-btn active" onclick="setActiveMarkType(this, \'highlight\')">高亮</span>' +
+        '<span class="toolbar-btn" onclick="setActiveMarkColor(this, \'purple\')">紫色</span>' +
+        '<span class="toolbar-btn" onclick="setActiveMarkColor(this, \'red\')">红色</span>' +
+        '<span class="toolbar-btn" onclick="setActiveMarkColor(this, \'green\')">绿色</span>' +
+        '<span class="toolbar-btn" onclick="setActiveMarkColor(this, \'blue\')">蓝色</span>' +
+        '<span class="toolbar-btn" onclick="clearAllMarks(' + mistake.index + ')">清除</span>' +
+        '</div>' +
+        '<div class="mistake-comparison-container">' +
+        (mistake.source_text ? '<div class="comparison-column"><div class="col-label">原文</div><div class="comparison-text comparison-source marks-container" data-column="source" data-index="' + mistake.index + '">' + renderMarkedText(mistake.source_text, marks.source) + '</div></div>' : '') +
+        (mistake.reference_translation ? '<div class="comparison-column"><div class="col-label">参考译文</div><div class="comparison-text comparison-reference marks-container" data-column="reference" data-index="' + mistake.index + '">' + renderMarkedText(mistake.reference_translation, marks.reference) + '</div></div>' : '') +
+        (mistake.user_translation ? '<div class="comparison-column"><div class="col-label">你的译文</div><div class="comparison-text comparison-user marks-container" data-column="user" data-index="' + mistake.index + '">' + renderMarkedText(mistake.user_translation, marks.user) + '</div></div>' : '') +
+        '</div>' +
+        '</div>';
 
-    // 知识点卡片
-    let studyPointsHtml = [];
+    html += '<div class="mistake-body">' + comparisonHtml + '</div>';
 
-    if (studyPoints.terminology && studyPoints.terminology.length > 0) {
-        studyPointsHtml.push(
-            '<div class="mistake-section">' +
-            '<h4 class="section-icon">📌 术语积累</h4>' +
-            '<ul class="study-list">' +
-            studyPoints.terminology.map(t => '<li>' + escapeHtml(t) + '</li>').join('') +
-            '</ul>' +
-            '</div>'
-        );
-    }
-
-    if (studyPoints.sentence_patterns && studyPoints.sentence_patterns.length > 0) {
-        studyPointsHtml.push(
-            '<div class="mistake-section">' +
-            '<h4 class="section-icon">📝 句式积累</h4>' +
-            '<ul class="study-list">' +
-            studyPoints.sentence_patterns.map(p => '<li>' + escapeHtml(p) + '</li>').join('') +
-            '</ul>' +
-            '</div>'
-        );
-    }
-
-    if (studyPoints.highlights && studyPoints.highlights.length > 0) {
-        studyPointsHtml.push(
-            '<div class="mistake-section">' +
-            '<h4 class="section-icon">✨ 表达亮点</h4>' +
-            '<ul class="study-list">' +
-            studyPoints.highlights.map(h => '<li>' + escapeHtml(h) + '</li>').join('') +
-            '</ul>' +
-            '</div>'
-        );
-    }
-
-    if (studyPoints.improvement_areas && studyPoints.improvement_areas.length > 0) {
-        studyPointsHtml.push(
-            '<div class="mistake-section mistake-highlight">' +
-            '<h4 class="section-icon">⚠️ 加强建议</h4>' +
-            '<ul class="study-list">' +
-            studyPoints.improvement_areas.map(a => '<li>' + escapeHtml(a) + '</li>').join('') +
-            '</ul>' +
-            '</div>'
-        );
-    }
-
-    // 添加对照分析
-    if (grading.comparative_analysis && grading.comparative_analysis.length > 0) {
-        studyPointsHtml.push(
-            '<div class="mistake-section mistake-highlight">' +
-            '<h4 class="section-icon">🇺🇸 中英对照分析</h4>' +
-            '<div class="comparative-analysis-small">' +
-            grading.comparative_analysis.map((item, idx) => `
-            <div class="comparative-item-small">
-                <div class="comparative-left-small">
-                    <p class="comparative-text-small user-text-small">${escapeHtml(item.user_sentence)}</p>
-                </div>
-                <div class="comparative-right-small">
-                    <p class="comparative-text-small ref-text-small">${escapeHtml(item.ref_sentence)}</p>
-                </div>
-                <div class="comparative-exp-small">
-                    <span class="exp-icon-small">💡</span>
-                    <p class="exp-text-small">${escapeHtml(item.difference)}</p>
-                </div>
-            </div>
-            `).join('') +
-            '</div>' +
-            '</div>'
-        );
-    }
-
-    // 优先显示语法错误和改进建议（如果有）
-    if ((grading.grammar_mistakes && grading.grammar_mistakes.length > 0) || (grading.suggestions && grading.suggestions.length > 0)) {
-        const analysisHtml = [];
-        if (grading.grammar_mistakes && grading.grammar_mistakes.length > 0) {
-            analysisHtml.push(
-                '<div class="mistake-section mistake-highlight">' +
-                '<h4 class="section-icon">⚠️ 语法错误</h4>' +
-                '<ul class="mistakes-list">' +
-                grading.grammar_mistakes.map(m => '<li>' + escapeHtml(m) + '</li>').join('') +
-                '</ul>' +
-                '</div>'
-            );
-        }
-        if (grading.suggestions && grading.suggestions.length > 0) {
-            analysisHtml.push(
-                '<div class="mistake-section mistake-highlight">' +
-                '<h4 class="section-icon">🎯 提升建议</h4>' +
-                '<ul class="suggestions-list">' +
-                grading.suggestions.map(s => '<li>' + escapeHtml(s) + '</li>').join('') +
-                '</ul>' +
-                '</div>'
-            );
-        }
-        studyPointsHtml = analysisHtml.concat(studyPointsHtml);
-    }
-
-    if (studyPointsHtml.length > 0) {
-        html += '<div class="mistake-body">' + studyPointsHtml.join('') + '</div>';
-    } else {
-        html += '<div class="mistake-body">' +
-            '<div class="empty-tip">本次练习暂无详细知识点分析，请确保 AI 配置正确</div>' +
-            '</div>';
-    }
+    // 保存原始文本供标记使用
+    storeOriginalText(mistake.index, 'source', mistake.source_text || '');
+    storeOriginalText(mistake.index, 'reference', mistake.reference_translation || '');
+    storeOriginalText(mistake.index, 'user', mistake.user_translation || '');
 
     html += '</div>';
     return html;
@@ -2636,11 +2614,126 @@ function clearMistakes() {
     }
 }
 
+// ==================== 错题标记功能 ====================
+
+// 当前标记状态
+let currentMarkType = 'highlight';
+let currentMarkColor = '';
+let currentMarkMistakeIndex = null;
+let currentMarkColumn = null;
+let savedSelectedText = ''; // 保存选中的文本
+
+// 设置标记高亮类型
+function setActiveMarkType(element, type) {
+    currentMarkType = type;
+    const toolbar = element.parentElement;
+    Array.from(toolbar.children).forEach(btn => btn.classList.remove('active'));
+    element.classList.add('active');
+}
+
+// 设置标记颜色并应用到选中文本
+function setActiveMarkColor(element, color) {
+    currentMarkColor = color;
+    const toolbar = element.parentElement;
+    Array.from(toolbar.children).forEach(btn => btn.classList.remove('active'));
+    element.classList.add('active');
+
+    // 应用标记到选中的文本
+    applyMarkToSelection();
+}
+
+// 保存选中的文本（在失去焦点前）
+function saveSelectedText() {
+    const selection = window.getSelection();
+    if (selection.toString().length > 0) {
+        savedSelectedText = selection.toString();
+    } else {
+        savedSelectedText = '';
+    }
+}
+
+// 在容器中渲染标记
+function renderMarksOnContainer(container, mistakeIndex, column) {
+    // 获取原始文本
+    let originalText = '';
+    if (column === 'source') originalText = getOriginalText(mistakeIndex, 'source');
+    else if (column === 'reference') originalText = getOriginalText(mistakeIndex, 'reference');
+    else if (column === 'user') originalText = getOriginalText(mistakeIndex, 'user');
+
+    if (!originalText) {
+        // 如果没有原始文本，使用容器当前的文本内容
+        originalText = container.textContent || '';
+    }
+
+    // 获取标记数据
+    const marks = getMistakeMarks(mistakeIndex);
+    const columnMarks = marks[column] || [];
+
+    // 渲染带标记的文本
+    const markedHtml = renderMarkedText(originalText, columnMarks);
+    container.innerHTML = markedHtml;
+}
+
+// 清除所有标记
+function clearAllMarks(mistakeIndex) {
+    if (!confirm('确定要清除所有标记吗？')) return;
+
+    saveMistakeMarks(mistakeIndex, { source: [], reference: [], user: [] });
+    loadMistakes(); // 重新加载错题集
+}
+
+// 应用标记到选中的文本（用户选中文字后点击颜色按钮触发）
+function applyMarkToSelection() {
+    if (!currentMarkMistakeIndex || !currentMarkColumn) return;
+
+    // 使用保存的选中文本（点击按钮后 selection 会丢失）
+    const selectedText = savedSelectedText;
+
+    if (!selectedText) return;
+
+    // 保存标记数据
+    saveMarkToStorage(currentMarkMistakeIndex, currentMarkColumn, selectedText);
+
+    // 重新渲染容器
+    const container = document.querySelector('.marks-container[data-index="' + currentMarkMistakeIndex + '"][data-column="' + currentMarkColumn + '"]');
+    if (container) {
+        renderMarksOnContainer(container, currentMarkMistakeIndex, currentMarkColumn);
+    }
+
+    // 清除选中
+    const selection = window.getSelection();
+    selection.removeAllRanges();
+}
+
+// 保存标记到 storage
+function saveMarkToStorage(mistakeIndex, column, selectedText) {
+    const marks = getMistakeMarks(mistakeIndex);
+    const newMark = {
+        start: 0,
+        end: selectedText.length,
+        type: currentMarkType,
+        color: currentMarkColor,
+        text: selectedText,
+        index: Date.now()
+    };
+
+    if (!marks[column]) marks[column] = [];
+    marks[column].push(newMark);
+
+    saveMistakeMarks(mistakeIndex, marks);
+}
+
 // ==================== 工具函数 ====================
 
 function escapeHtml(text) {
     if (!text) return '';
     return text.replace(/&/g, '&amp;').replace(/</g, '&lt;').replace(/>/g, '&gt;').replace(/"/g, '&quot;').replace(/'/g, '&#039;');
+}
+
+// 转义正则表达式特殊字符
+function escapeRegExp(text) {
+    if (!text) return '';
+    return text.replace(/[.*+?^${}()|[\]\\]/g, '\\$&');
 }
 
 function getScoreClass(score) {
@@ -2658,18 +2751,24 @@ function formatTime(ts) {
 // ==================== 计时器 ====================
 
 function startTimer() {
+    const timerElement = document.getElementById('timer');
+    if (!timerElement) return; // 如果没有 timer 元素（如错题集页面），跳过计时器
+
     if (practiceTimer) clearInterval(practiceTimer);
     practiceTimer = setInterval(() => {
         practiceElapsedTime++;
         const m = Math.floor(practiceElapsedTime / 60), s = practiceElapsedTime % 60;
-        document.getElementById('timer').textContent = String(m).padStart(2, '0') + ':' + String(s).padStart(2, '0');
+        timerElement.textContent = String(m).padStart(2, '0') + ':' + String(s).padStart(2, '0');
     }, 1000);
 }
 
 function resetTimer() {
+    const timerElement = document.getElementById('timer');
+    if (!timerElement) return;
+
     if (practiceTimer) clearInterval(practiceTimer);
     practiceElapsedTime = 0;
-    document.getElementById('timer').textContent = '00:00';
+    timerElement.textContent = '00:00';
 }
 
 // 页面初始化

@@ -1,5 +1,13 @@
 CATTI 二笔练习网站（个人用）
 
+# 260427 Update
+- Updated new DeepSeek models(DeepSeek-V4-Flash and DeepSeek-V4-Pro)
+- Added thinking and non-thinking 
+
+# 260423 Update
+- added color mark in  **错题集**
+- happey every day, except for CATTI
+
 # 260417 Update
 - added **错题集** (Mistakes Collection) - track weaknesses and review later
 - improved **批改prompt** - added comparative analysis requirements

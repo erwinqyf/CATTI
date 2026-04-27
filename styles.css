@@ -1363,24 +1363,135 @@ body {
 }
 
 .mistake-comparison-container .comparison-reference {
-    background: linear-gradient(135deg, #f0fdf4 0%, #dcfce7 100%);
-    border: 1px solid #86efac;
+    background: #f3f4f6;
+    border: 1px solid #e5e7eb;
     padding: 16px;
     border-radius: 12px;
+    color: #374151;
+}
+
+.mistake-comparison-container .comparison-user {
+    background: #f3f4f6;
+    border: 1px solid #e5e7eb;
+    padding: 16px;
+    border-radius: 12px;
+    color: #374151;
+}
+
+/* 标记高亮样式 */
+.mistake-comparison-container .highlight-text {
+    background-color: #facc15;
+    padding: 0 2px;
+    border-radius: 2px;
+}
+
+.mistake-comparison-container .highlight-red {
+    background-color: #fca5a5;
+    padding: 0 2px;
+    border-radius: 2px;
+}
+
+.mistake-comparison-container .highlight-green {
+    background-color: #86efac;
+    padding: 0 2px;
+    border-radius: 2px;
+}
+
+.mistake-comparison-container .highlight-blue {
+    background-color: #93c5fd;
+    padding: 0 2px;
+    border-radius: 2px;
+}
+
+.mistake-comparison-container .text-purple {
+    color: #7c3aed;
+    font-weight: 500;
+}
+
+.mistake-comparison-container .text-red {
+    color: #dc2626;
+    font-weight: 500;
+}
+
+.mistake-comparison-container .text-green {
     color: #15803d;
     font-weight: 500;
 }
 
-.mistake-comparison-container .comparison-user {
-    background: linear-gradient(135deg, #fef2f2 0%, #fee2e2 100%);
-    border: 1px solid #fca5a5;
-    padding: 16px;
-    border-radius: 12px;
-    color: #b91c1c;
+.mistake-comparison-container .text-blue {
+    color: #0369a1;
+    font-weight: 500;
+}
+
+.mistake-comparison-container .text-gray {
+    color: #6b7280;
+    font-weight: 500;
+}
+
+/* 防止双击编辑 */
+.mistake-comparison-container .mark-item {
+    user-select: none;
+    -webkit-user-select: none;
+    -moz-user-select: none;
+    -ms-user-select: none;
 }
 
 .mistake-item.mistake-item-card {
     border-left: 4px solid #ff3b30;
+}
+
+/* 标记工具栏样式 */
+.mistake-marker-toolbar {
+    display: flex;
+    gap: 8px;
+    padding: 10px 16px;
+    background: #f9fafb;
+    border-bottom: 1px solid #e5e7eb;
+    flex-wrap: wrap;
+}
+
+.mistake-marker-toolbar .toolbar-btn {
+    padding: 6px 12px;
+    font-size: 13px;
+    background: #e5e7eb;
+    border: none;
+    border-radius: 6px;
+    cursor: pointer;
+    transition: all 0.2s;
+}
+
+.mistake-marker-toolbar .toolbar-btn:hover {
+    background: #d1d5db;
+}
+
+.mistake-marker-toolbar .toolbar-btn.active {
+    background: #3b82f6;
+    color: white;
+}
+
+.mistake-marker-toolbar .toolbar-btn:first-child {
+    background: #facc15;
+    color: #78350f;
+}
+
+.mistake-marker-toolbar .toolbar-btn:nth-child(2) {
+    background: #d8b4fe;
+    color: #4c1d95;
+}
+
+.mistake-marker-toolbar .toolbar-btn:nth-child(3) {
+    background: #fca5a5;
+    color: #7f1d1d;
+}
+
+.mistake-marker-toolbar .toolbar-btn:nth-child(4) {
+    background: #86efac;
+    color: #14532d;
+}
+
+.mistake-marker-toolbar .toolbar-btn:nth-child(5) {
+    background: #93c5fd;
+    color: #1e3a8a;
 }
 
 .mistake-body {
