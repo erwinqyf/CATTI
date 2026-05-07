@@ -1293,6 +1293,14 @@ function changeLanguagePair() {
             questionState[qNum] = { generated: false, graded: false, data: null, result: null, langPair: langPair };
         });
     }
+
+    // 语言对改变时，自动重新生成当前显示的题目
+    setTimeout(() => {
+        const apiKey = localStorage.getItem('apiKey');
+        if (apiKey) {
+            generateAllQuestions();
+        }
+    }, 500);
 }
 
 // 获取当前主题
@@ -1331,7 +1339,13 @@ function selectTopicForPractice(topic) {
 // ==================== 工具函数 ====================
 
 function getQuestionLangPair(questionNum) {
-    return (questionNum === 1 || questionNum === 3) ? 'zh-en' : 'en-zh';
+    // 获取当前用户选择的语言对
+    const currentLangPair = getCurrentLangPair();
+
+    // 根据问题编号返回对应的语言对
+    // 问题1,2使用当前选择的语言对；问题3,4使用相反的语言对
+    return (questionNum === 1 || questionNum === 2) ? currentLangPair :
+           currentLangPair === 'zh-en' ? 'en-zh' : 'zh-en';
 }
 
 function getSourceTextId(questionNum) {
@@ -1515,11 +1529,23 @@ async function generateQuestion(questionNum) {
         const response = await callAPI(messages, 0.7);
 
         let question;
-        const jsonMatch = response.match(/\{[\s\S]*\}/);
-        if (jsonMatch) {
-            question = JSON.parse(jsonMatch[0]);
-        } else {
-            throw new Error('无法解析 AI 返回的题目格式');
+        let jsonStr;
+
+        // 尝试多种方式提取 JSON
+        // 1. 尝试直接解析整个响应
+        try {
+            question = JSON.parse(response);
+        } catch (e) {
+            // 2. 查找第一个完整的 JSON 对象（处理嵌套情况）
+            const jsonMatch = response.match(/\{[\s\S]*\}/);
+            if (jsonMatch) {
+                jsonStr = jsonMatch[0];
+                // 清理可能的 Markdown 格式标记
+                jsonStr = jsonStr.replace(/^```json\s*/m, '').replace(/\s*```$/m, '');
+                question = JSON.parse(jsonStr);
+            } else {
+                throw new Error('无法解析 AI 返回的题目格式');
+            }
         }
 
         const questionData = {
@@ -1574,6 +1600,9 @@ async function generateAllQuestions() {
     try {
         // 获取当前显示的语言对
         const currentLangPair = getCurrentLangPair();
+
+        // 根据语言对确定生成哪两个问题
+        // zh-en: 生成问题1和2；en-zh: 生成问题3和4
         const startNum = currentLangPair === 'zh-en' ? 1 : 3;
 
         for (let i = 0; i < 2; i++) {
