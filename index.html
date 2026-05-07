@@ -1339,13 +1339,10 @@ function selectTopicForPractice(topic) {
 // ==================== 工具函数 ====================
 
 function getQuestionLangPair(questionNum) {
-    // 获取当前用户选择的语言对
-    const currentLangPair = getCurrentLangPair();
-
-    // 根据问题编号返回对应的语言对
-    // 问题1,2使用当前选择的语言对；问题3,4使用相反的语言对
-    return (questionNum === 1 || questionNum === 2) ? currentLangPair :
-           currentLangPair === 'zh-en' ? 'en-zh' : 'zh-en';
+    // 问题1、2对应 zh-en（中译英，原文中文）
+    // 问题3、4对应 en-zh（英译中，原文 English）
+    // 根据问题编号返回固定的语言对
+    return (questionNum === 1 || questionNum === 2) ? 'zh-en' : 'en-zh';
 }
 
 function getSourceTextId(questionNum) {
@@ -1426,11 +1423,15 @@ async function callAPI(messages, temperature = 0.7) {
             throw new Error(data.error?.message || 'API 请求失败');
         }
 
+        // 尝试多种方式获取 content
+        // 支持 DeepSeek thinking mode 的返回格式
+        if (data.choices && data.choices.length > 0) {
+            const message = data.choices[0].message;
+            // 优先使用 reasoning_content（thinking mode），否则使用 content
+            return message.reasoning_content || message.content || '';
+        }
         if (data.output && data.output.choices && data.output.choices.length > 0) {
             return data.output.choices[0].message.content;
-        }
-        if (data.choices && data.choices.length > 0) {
-            return data.choices[0].message.content;
         }
         throw new Error('无法解析 API 返回结果');
 
@@ -1519,6 +1520,8 @@ async function generateQuestion(questionNum) {
 
     try {
         const langPair = getQuestionLangPair(questionNum);
+        console.log('generateQuestion debug:', { questionNum, langPair });
+
         // 练习模式使用 'single'
         const questionType = 'single';
         const prompt = getGeneratorPrompt(topic, '进阶', langPair, questionType);
