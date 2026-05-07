@@ -1280,16 +1280,25 @@ function changeLanguagePair() {
     localStorage.setItem('languagePair', langPair);
     showLanguagePairSection(langPair);
 
-    // 清空当前显示区域的内容
+    // 清空当前显示区域的内容并更新语言标记
     const activeSection = document.querySelector('.language-pair-section[style*="display: block"]');
     if (activeSection) {
         const questionBlocks = activeSection.querySelectorAll('.question-block');
         questionBlocks.forEach((block, index) => {
             const qNum = index + 1;
-            document.getElementById(getSourceTextId(qNum)).innerHTML = '<div class="placeholder-text">点击"生成第' + qNum + '篇"按钮</div>';
+            const sourceTextEl = document.getElementById(getSourceTextId(qNum));
+            sourceTextEl.innerHTML = '<div class="placeholder-text">点击"生成第' + qNum + '篇"按钮</div>';
             document.getElementById(getTargetTextId(qNum)).value = '';
             document.getElementById(getGradingContentId(qNum)).innerHTML = '<div class="placeholder-text">提交后显示批改结果</div>';
             document.getElementById(getGradeScoreId(qNum)).textContent = '--';
+
+            // 更新原文语言标记
+            const panelLang = sourceTextEl.parentElement.querySelector('.panel-lang');
+            if (panelLang) {
+                // 问题1、2是zh-en，问题3、4是en-zh
+                panelLang.textContent = (qNum === 1 || qNum === 3) ? '中文' : 'English';
+            }
+
             questionState[qNum] = { generated: false, graded: false, data: null, result: null, langPair: langPair };
         });
     }
