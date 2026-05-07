@@ -1436,8 +1436,14 @@ async function callAPI(messages, temperature = 0.7) {
         // 支持 DeepSeek thinking mode 的返回格式
         if (data.choices && data.choices.length > 0) {
             const message = data.choices[0].message;
-            // 优先使用 reasoning_content（thinking mode），否则使用 content
-            return message.reasoning_content || message.content || '';
+            // 优先使用 content（正式回答），reasoning_content 是思考过程
+            if (message.content) {
+                return message.content;
+            }
+            if (message.reasoning_content) {
+                return message.reasoning_content;
+            }
+            return '';
         }
         if (data.output && data.output.choices && data.output.choices.length > 0) {
             return data.output.choices[0].message.content;
@@ -1539,6 +1545,7 @@ async function generateQuestion(questionNum) {
             { role: 'user', content: prompt }
         ];
         const response = await callAPI(messages, 0.7);
+        console.log('generateQuestion response:', response);
 
         let question;
         let jsonStr;
@@ -1547,16 +1554,25 @@ async function generateQuestion(questionNum) {
         // 1. 尝试直接解析整个响应
         try {
             question = JSON.parse(response);
+            console.log('JSON parsed successfully');
         } catch (e) {
+            console.log('JSON parse failed:', e.message);
             // 2. 查找第一个完整的 JSON 对象（处理嵌套情况）
             const jsonMatch = response.match(/\{[\s\S]*\}/);
             if (jsonMatch) {
                 jsonStr = jsonMatch[0];
+                console.log('JSON extracted:', jsonStr.substring(0, 200) + '...');
                 // 清理可能的 Markdown 格式标记
                 jsonStr = jsonStr.replace(/^```json\s*/m, '').replace(/\s*```$/m, '');
-                question = JSON.parse(jsonStr);
+                try {
+                    question = JSON.parse(jsonStr);
+                    console.log('JSON parsed successfully after extraction');
+                } catch (e2) {
+                    console.log('JSON parse after extraction failed:', e2.message);
+                    throw new Error('无法解析 AI 返回的题目格式: ' + e2.message);
+                }
             } else {
-                throw new Error('无法解析 AI 返回的题目格式');
+                throw new Error('无法解析 AI 返回的题目格式: 未找到 JSON 对象');
             }
         }
 
