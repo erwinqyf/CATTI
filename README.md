@@ -1,5 +1,8 @@
 CATTI 二笔练习网站（个人用）
 
+# 260507 Update
+- fixed api return message: message.content before message.reasoning_content
+
 # 260427 Update
 - Updated new DeepSeek models(DeepSeek-V4-Flash and DeepSeek-V4-Pro)
 - Added thinking and non-thinking 

@@ -795,6 +795,8 @@ function getGeneratorPrompt(topic, difficulty = '进阶', langPair = 'zh-en', qu
     const sourceLang = isZhEn ? '中文' : '英文';
     const targetLang = isZhEn ? '英文' : '中文';
     const taskDesc = isZhEn ? '生成一道中译英翻译题' : '生成一道英译中翻译题';
+    const sourceLangLabel = isZhEn ? '中文' : '英文';
+    const targetLangLabel = isZhEn ? '英文' : '中文';
     // 根据题目类型和语言对调整词数
     // 练习模式：单篇文章，英译中 ~450词，汉译英 ~300字
     // 考试模式：两篇文章合计，英译中 ~900词，汉译英 ~600字
@@ -812,8 +814,10 @@ function getGeneratorPrompt(topic, difficulty = '进阶', langPair = 'zh-en', qu
 【任务要求】
 1. 为 "${topic}" 类主题${taskDesc}
 2. 难度等级：${difficulty}
-3. 原文词数：${sourceCount}
-4. 文本长度：段落形式，保留原有标点、段落、数字格式
+3. 原文语言：**${sourceLangLabel}**（WARNING: 不要使用${targetLang}作为原文）
+4. 原文词数：${sourceCount}
+5. 译文语言：**${targetLangLabel}**
+6. 文本长度：段落形式，保留原有标点、段落、数字格式
 
 【文本要求】
 - 题材范围：政治外交、宏观经济、社会发展、科技创新、文化历史、生态环境、国际组织文件、政策白皮书/报告节选
@@ -846,7 +850,9 @@ function getGeneratorPrompt(topic, difficulty = '进阶', langPair = 'zh-en', qu
 }
 
 【重要提示】
-出题后只输出JSON，不输出任何分析、提示或答案。`;
+1. 原文必须是${sourceLangLabel}，译文必须是${targetLangLabel}！
+2. 出题后只输出JSON，不输出任何分析、提示或答案。
+3. 如果输出的内容不符合要求，将无法通过命题审核。`;
 }
 
 // 阅卷 Prompt (evaluator)
@@ -1280,36 +1286,19 @@ function changeLanguagePair() {
     localStorage.setItem('languagePair', langPair);
     showLanguagePairSection(langPair);
 
-    // 清空当前显示区域的内容并更新语言标记
+    // 清空当前显示区域的内容
     const activeSection = document.querySelector('.language-pair-section[style*="display: block"]');
     if (activeSection) {
         const questionBlocks = activeSection.querySelectorAll('.question-block');
         questionBlocks.forEach((block, index) => {
             const qNum = index + 1;
-            const sourceTextEl = document.getElementById(getSourceTextId(qNum));
-            sourceTextEl.innerHTML = '<div class="placeholder-text">点击"生成第' + qNum + '篇"按钮</div>';
+            document.getElementById(getSourceTextId(qNum)).innerHTML = '<div class="placeholder-text">点击"生成第' + qNum + '篇"按钮</div>';
             document.getElementById(getTargetTextId(qNum)).value = '';
             document.getElementById(getGradingContentId(qNum)).innerHTML = '<div class="placeholder-text">提交后显示批改结果</div>';
             document.getElementById(getGradeScoreId(qNum)).textContent = '--';
-
-            // 更新原文语言标记
-            const panelLang = sourceTextEl.parentElement.querySelector('.panel-lang');
-            if (panelLang) {
-                // 问题1、2是zh-en，问题3、4是en-zh
-                panelLang.textContent = (qNum === 1 || qNum === 3) ? '中文' : 'English';
-            }
-
             questionState[qNum] = { generated: false, graded: false, data: null, result: null, langPair: langPair };
         });
     }
-
-    // 语言对改变时，自动重新生成当前显示的题目
-    setTimeout(() => {
-        const apiKey = localStorage.getItem('apiKey');
-        if (apiKey) {
-            generateAllQuestions();
-        }
-    }, 500);
 }
 
 // 获取当前主题
@@ -1437,6 +1426,7 @@ async function callAPI(messages, temperature = 0.7) {
         if (data.choices && data.choices.length > 0) {
             const message = data.choices[0].message;
             // 优先使用 content（正式回答），reasoning_content 是思考过程
+            // 如果 content 为空且 reasoning_content 不为空，尝试从 reasoning_content 中提取 JSON
             if (message.content) {
                 return message.content;
             }
@@ -1545,7 +1535,7 @@ async function generateQuestion(questionNum) {
             { role: 'user', content: prompt }
         ];
         const response = await callAPI(messages, 0.7);
-        console.log('generateQuestion response:', response);
+        console.log('generateQuestion response:', response); // 调试：查看原始响应
 
         let question;
         let jsonStr;
@@ -1554,21 +1544,21 @@ async function generateQuestion(questionNum) {
         // 1. 尝试直接解析整个响应
         try {
             question = JSON.parse(response);
-            console.log('JSON parsed successfully');
+            console.log('JSON parsed successfully'); // 调试
         } catch (e) {
-            console.log('JSON parse failed:', e.message);
+            console.log('JSON parse failed:', e.message); // 调试
             // 2. 查找第一个完整的 JSON 对象（处理嵌套情况）
             const jsonMatch = response.match(/\{[\s\S]*\}/);
             if (jsonMatch) {
                 jsonStr = jsonMatch[0];
-                console.log('JSON extracted:', jsonStr.substring(0, 200) + '...');
+                console.log('JSON extracted:', jsonStr.substring(0, 200) + '...'); // 调试
                 // 清理可能的 Markdown 格式标记
                 jsonStr = jsonStr.replace(/^```json\s*/m, '').replace(/\s*```$/m, '');
                 try {
                     question = JSON.parse(jsonStr);
-                    console.log('JSON parsed successfully after extraction');
+                    console.log('JSON parsed successfully after extraction'); // 调试
                 } catch (e2) {
-                    console.log('JSON parse after extraction failed:', e2.message);
+                    console.log('JSON parse after extraction failed:', e2.message); // 调试
                     throw new Error('无法解析 AI 返回的题目格式: ' + e2.message);
                 }
             } else {

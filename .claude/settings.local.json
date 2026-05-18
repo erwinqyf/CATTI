@@ -3,7 +3,27 @@
     "allow": [
       "Bash(python -m http.server 8080)",
       "Bash(start \"\" \"c:\\\\Users\\\\33211\\\\Desktop\\\\catti考试\\\\index.html\")",
-      "Read(//c//**)"
+      "Read(//c//**)",
+      "Bash(git -C \"c:/Users/33211/Desktop/catti考试\" diff -- php-app/public/app.js)",
+      "Bash(git -C \"c:/Users/33211/Desktop/catti考试\" diff --staged -- php-app/public/app.js)",
+      "Bash(git -C \"c:/Users/33211/Desktop/catti考试/php-app/public\" log --oneline -5)",
+      "Bash(git -C \"c:/Users/33211/Desktop/catti考试/php-app/public\" status)",
+      "Bash(git -C \"c:/Users/33211/Desktop/catti考试/php-app/public\" diff -- index.html)",
+      "Bash(git -C \"c:/Users/33211/Desktop/catti考试\" log --all --oneline -S \"changeLanguagePair\" -- \"*.js\")",
+      "Bash(git -C \"c:/Users/33211/Desktop/catti考试\" submodule status)",
+      "Bash(git -C \"c:/Users/33211/Desktop/catti考试\" config --file .gitmodules -l)",
+      "Bash(echo \"---exit:$?\")",
+      "Bash(git -C \"c:/Users/33211/Desktop/catti考试\" ls-files --ignored --others --exclude-standard)",
+      "Bash(git -C \"c:/Users/33211/Desktop/catti考试\" config --local --list)",
+      "Bash(rm \"c:/Users/33211/Desktop/catti考试/app.js\" && rm -rf \"c:/Users/33211/Desktop/catti考试/php-app/public/.git\" && echo \"Done: app.js deleted, php-app/public/.git removed\")",
+      "Bash(git -C \"c:/Users/33211/Desktop/catti考试\" status)",
+      "Bash(git -C \"c:/Users/33211/Desktop/catti考试\" diff -- index.html)",
+      "Bash(git -C \"c:/Users/33211/Desktop/catti考试\" add .gitignore index.html)",
+      "Bash(git -C \"c:/Users/33211/Desktop/catti考试\" add -u)",
+      "Bash(git -C c:/Users/33211/Desktop/catti考试 commit -m ' *)"
+    ],
+    "additionalDirectories": [
+      "c:\\Users\\33211\\Desktop\\catti考试\\php-app\\public\\.git"
     ]
   }
 }
