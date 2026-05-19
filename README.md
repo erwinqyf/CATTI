@@ -1,5 +1,11 @@
 CATTI 二笔练习网站（个人用）
 
+# 260519
+- added model customization feature
+
+# 260518
+- published on the internet!!!!
+
 # 260507 Update
 - fixed api return message: message.content before message.reasoning_content
 
